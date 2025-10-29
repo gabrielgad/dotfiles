@@ -1,0 +1,259 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+
+# Don't print a new line at the start of the prompt
+add_newline = false
+
+# Custom format - comprehensive language support
+format = """
+$directory\
+$git_branch\
+$git_status\
+$nodejs\
+$bun\
+$deno\
+$python\
+$rust\
+$golang\
+$java\
+$c\
+$dotnet\
+$kotlin\
+$dart\
+$elixir\
+$elm\
+$haskell\
+$julia\
+$crystal\
+$aws\
+$docker_context\
+\n$character"""
+
+# Right side prompt with execution time
+right_format = """
+$cmd_duration\
+$jobs\
+$status\
+"""
+
+# Character module (prompt symbol) 
+[character]
+success_symbol = '[󰬫](bold fg:#55A649)'  # Bright Green
+error_symbol = '[󰬫](bold fg:#C0392B)'    # Bright Red
+vimcmd_symbol = '[󰬩](bold fg:#FDBC4B)'   # Bright Yellow
+
+# Directory module - Clean geometric style
+[directory]
+style = "fg:#3DAEE9"  # Bright Blue
+format = '[$path ]($style)'
+truncation_length = 3
+truncation_symbol = "…/"
+home_symbol = "󰚡 "
+
+[directory.substitutions]
+"Documents" = "󱔘 "
+"Downloads" = "󱃩 "
+"Music" = "󱍚 "
+"Pictures" = "󰥶 "
+"projects" = "󱂀 "
+"Desktop" = "󰇄 "
+"Code" = "󰅩 "
+"src" = "󰳐 "
+".config" = "󱕷 "
+
+# Git modules
+[git_branch]
+symbol = " "
+style = "fg:#1ABC9C"
+format = '[$symbol$branch ]($style)'
+
+[git_status]
+style = "fg:#55A649"
+format = '[$all_status$ahead_behind ]($style)'
+conflicted = '󰞇 ${count} '
+ahead = '󰁠 ${count} '
+behind = '󰁈 ${count} '
+diverged = '󰘬 ${ahead_count}/${behind_count} '
+up_to_date = '󰗡 '
+untracked = '󱪞 ${count} '
+stashed = '󱈎 '
+modified = '󰷉 ${count} '
+staged = '󰐙 ${count} '
+renamed = '󱀱 ${count} '
+deleted = '󰮈 ${count} '
+
+# Programming Languages (Official Nerd Font Icons)
+[aws]
+symbol = " "
+style = "fg:#FF9900"
+format = '[$symbol($profile) ]($style)'
+
+[bun]
+symbol = "󰏖 "
+style = "fg:#FBF0DF"
+format = '[$symbol($version) ]($style)'
+
+[c]
+symbol = " "
+style = "fg:#A8B9CC"
+format = '[$symbol($version) ]($style)'
+
+[dotnet]
+symbol = "󰪮 "
+style = "fg:#512BD4"
+format = '[$symbol($version) ]($style)'
+
+[crystal]
+symbol = " "
+style = "fg:#000000"
+format = '[$symbol($version) ]($style)'
+
+[dart]
+symbol = " "
+style = "fg:#0175C2"
+format = '[$symbol($version) ]($style)'
+
+[deno]
+symbol = " "
+style = "fg:#000000"
+format = '[$symbol($version) ]($style)'
+
+[elixir]
+symbol = " "
+style = "fg:#4B275F"
+format = '[$symbol($version) ]($style)'
+
+[elm]
+symbol = " "
+style = "fg:#60B5CC"
+format = '[$symbol($version) ]($style)'
+
+[golang]
+symbol = " "
+style = "fg:#00ADD8"
+format = '[$symbol($version) ]($style)'
+
+[haskell]
+symbol = " "
+style = "fg:#5D4F85"
+format = '[$symbol($version) ]($style)'
+
+[java]
+symbol = " "
+style = "fg:#ED8B00"
+format = '[$symbol($version) ]($style)'
+
+[julia]
+symbol = " "
+style = "fg:#9558B2"
+format = '[$symbol($version) ]($style)'
+
+[kotlin]
+symbol = " "
+style = "fg:#7F52FF"
+format = '[$symbol($version) ]($style)'
+
+[nodejs]
+symbol = " "
+style = "fg:#68A063"
+format = '[$symbol($version) ]($style)'
+
+[python]
+symbol = " "
+style = "fg:#3776AB"
+format = '[$symbol($version) ]($style)'
+python_binary = ["python3", "python"]
+
+[rust]
+symbol = " "
+style = "fg:#CE422B"
+format = '[$symbol($version) ]($style)'
+
+# Development Tools
+[docker_context]
+symbol = " "
+style = "fg:#2496ED"
+format = '[$symbol$context ]($style)'
+only_with_files = true
+
+[kubernetes]
+symbol = "󱃾 "
+style = "fg:#326CE5"
+format = '[$symbol$context ]($style)'
+disabled = false
+
+[terraform]
+symbol = " "
+style = "fg:#7B42BC"
+format = '[$symbol$workspace ]($style)'
+
+# Other useful modules
+[cmd_duration]
+min_time = 500
+style = "fg:#F67400"
+format = '[󰔛 $duration ]($style)'
+
+[jobs]
+symbol = "󰠔 "
+style = "fg:#1ABC9C"
+number_threshold = 1
+format = '[$symbol$number ]($style)'
+
+[status]
+disabled = false
+style = "fg:#ED1515"
+symbol = "󰅚 "
+success_symbol = ""
+format = '[$symbol$status ]($style)'
+
+[username]
+disabled = false
+show_always = true
+style_user = "fg:#17A88B"
+style_root = "fg:#C0392B"
+format = '[󰀓 $user ]($style)'
+
+[hostname]
+disabled = false
+ssh_only = false
+style = "fg:#17A88B"
+format = '[󰪫 $hostname ]($style)'
+
+[package]
+symbol = "󰏖 "
+style = "fg:#C792EA"
+format = '[$symbol$version ]($style)'
+
+[git_commit]
+commit_hash_length = 7
+style = "fg:#FFCB6B"
+format = '[󰜘 $hash ]($style)'
+
+[git_state]
+format = '[$state( $progress_current/$progress_total) ]($style)'
+style = "fg:#F07178"
+rebase = "󰓦 REBASING"
+merge = "󰘭 MERGING"
+revert = "󰕍 REVERTING"
+cherry_pick = "🍒 CHERRY-PICKING"
+bisect = "󰍉 BISECTING"
+am = "󰇰 AM"
+am_or_rebase = "󰇰 AM/REBASE"
+
+[memory_usage]
+disabled = true
+threshold = 70
+style = "fg:#F07178"
+format = '[ ${ram_pct} ]($style)'
+
+[battery]
+disabled = true
+full_symbol = '󰁹 '
+charging_symbol = '󰂄 '
+discharging_symbol = '󱟟 '
+
+[[battery.display]]
+threshold = 30
+style = 'bold fg:#F07178'
+
