@@ -1,0 +1,368 @@
+/* {{metadata.name}} Theme - Waybar Complete Stylesheet */
+/* Generated from: {{metadata.wallpaper}} */
+
+/* ============================================
+   Color Definitions
+   ============================================ */
+
+@define-color foreground {{text.primary}};
+@define-color background {{surface.primary}};
+
+/* UI accent colors from theme */
+@define-color accent {{accent.primary}};
+@define-color accent-bright {{text.primary}};
+@define-color accent-medium {{accent.tertiary}};
+@define-color active {{semantic.active}};
+@define-color active-fg {{text.primary}};
+@define-color hover {{semantic.hover}};
+@define-color urgent {{text.primary}};
+@define-color border {{border.primary}};
+
+/* Module-specific colors */
+@define-color cpu {{accent.primary}};
+@define-color memory {{accent.primary}};
+@define-color storage {{accent.primary}};
+@define-color volume {{accent.primary}};
+@define-color backlight {{accent.primary}};
+@define-color battery {{accent.primary}};
+@define-color clock {{accent.primary}};
+@define-color network {{accent.primary}};
+@define-color bluetooth {{accent.primary}};
+@define-color temperature {{accent.primary}};
+
+/* ============================================
+   Global Defaults
+   ============================================ */
+
+* {
+    font-family: "FiraCode Nerd Font", "Fira Sans Semibold", "Font Awesome 6 Free", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    min-height: 0;
+    margin: 0.2em 0.3em 0.2em 0.3em;
+    transition-property: background-color;
+    transition-duration: 0.5s;
+}
+
+/* ============================================
+   Bar Container
+   ============================================ */
+
+#waybar {
+    background-color: transparent;
+    color: @foreground;
+    transition-property: background-color;
+    transition-duration: 0.5s;
+    border-radius: 0px;
+    margin: 0px 0px;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+/* ============================================
+   Workspaces
+   ============================================ */
+
+#workspaces {
+    background-color: @background;
+    border-radius: 14px;
+    padding: 3px 6px;
+}
+
+#workspaces button {
+    padding: 3px 5px;
+    margin: 3px 5px;
+    border-radius: 6px;
+    background-color: @background;
+    color: @foreground;
+    transition: all 0.3s ease-in-out;
+    font-size: 13px;
+}
+
+#workspaces button.active {
+    background-color: @active;
+    color: @active-fg;
+}
+
+#workspaces button:hover {
+    background: @accent;
+    background-color: @accent;
+    background-image: none;
+    border-radius: 6px;
+    color: @background;
+}
+
+#workspaces button.active:hover {
+    background-color: @accent;
+    color: @background;
+}
+
+#workspaces button.urgent {
+    background-color: @urgent;
+}
+
+/* ============================================
+   Window Title
+   ============================================ */
+
+#window {
+    background-color: @background;
+    font-size: 15px;
+    font-weight: 800;
+    color: @foreground;
+    border-radius: 14px;
+    padding: 3px 6px;
+    margin: 2px;
+}
+
+/* ============================================
+   Module Base Styles
+   ============================================ */
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#mode,
+#idle_inhibitor,
+#mpd,
+#bluetooth,
+#language,
+#keyboard-state {
+    background-color: @background;
+    border-radius: 14px;
+    padding: 6px;
+}
+
+/* ============================================
+   Module-Specific Colors
+   ============================================ */
+
+#clock {
+    color: @clock;
+}
+
+#battery {
+    color: @battery;
+}
+
+#cpu {
+    color: @cpu;
+}
+
+#memory {
+    color: @memory;
+}
+
+#temperature {
+    color: @temperature;
+}
+
+#backlight {
+    color: @backlight;
+}
+
+#pulseaudio,
+#wireplumber {
+    color: @volume;
+}
+
+#network {
+    color: @network;
+}
+
+#bluetooth {
+    color: @bluetooth;
+}
+
+#language,
+#keyboard-state {
+    color: @foreground;
+    padding: 0 0px;
+    margin: 0 5px;
+    min-width: 16px;
+}
+
+#tray {
+    background-color: @background;
+    border-radius: 14px;
+    padding: 6px;
+}
+
+#disk {
+    background-color: @background;
+}
+
+#idle_inhibitor {
+    background-color: @background;
+}
+
+/* ============================================
+   Hover States - CRITICAL: accent bg + dark text
+   ============================================ */
+
+#clock:hover,
+#battery:hover,
+#cpu:hover,
+#memory:hover,
+#disk:hover,
+#temperature:hover,
+#backlight:hover,
+#network:hover,
+#pulseaudio:hover,
+#wireplumber:hover,
+#mode:hover,
+#idle_inhibitor:hover,
+#mpd:hover,
+#bluetooth:hover,
+#tray:hover,
+#language:hover,
+#keyboard-state:hover {
+    background: @accent;
+    background-color: @accent;
+    background-image: none;
+    color: @background;
+    border-radius: 14px;
+}
+
+/* Ensure child elements inherit hover text color */
+#clock:hover *,
+#battery:hover *,
+#cpu:hover *,
+#memory:hover *,
+#disk:hover *,
+#temperature:hover *,
+#backlight:hover *,
+#network:hover *,
+#pulseaudio:hover *,
+#wireplumber:hover *,
+#mode:hover *,
+#idle_inhibitor:hover *,
+#mpd:hover *,
+#bluetooth:hover *,
+#tray:hover *,
+#language:hover *,
+#keyboard-state:hover * {
+    color: @background;
+}
+
+/* Button hover override */
+button:hover,
+* button:hover {
+    background: @accent;
+    background-color: @accent;
+    background-image: none;
+    color: @background;
+}
+
+/* ============================================
+   Battery States
+   ============================================ */
+
+#battery.charging,
+#battery.full,
+#battery.plugged {
+    color: #26a65b;
+}
+
+#battery.critical:not(.charging) {
+    color: #f53c3c;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes blink {
+    to {
+        background-color: @background;
+        color: @urgent;
+    }
+}
+
+/* ============================================
+   Temperature States
+   ============================================ */
+
+#temperature.critical {
+    background-color: @urgent;
+}
+
+/* ============================================
+   Network States
+   ============================================ */
+
+#network.disconnected {
+    color: #f53c3c;
+}
+
+/* ============================================
+   Bluetooth States
+   ============================================ */
+
+#bluetooth.disconnected {
+    color: #f53c3c;
+}
+
+/* ============================================
+   Idle Inhibitor States
+   ============================================ */
+
+#idle_inhibitor.activated {
+    background-color: @active;
+    color: @active-fg;
+}
+
+/* ============================================
+   Keyboard State
+   ============================================ */
+
+#keyboard-state > label {
+    padding: 0 0px;
+}
+
+#keyboard-state > label.locked {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   Tray States
+   ============================================ */
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: @urgent;
+}
+
+/* ============================================
+   Layout Adjustments
+   ============================================ */
+
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+.modules-right > widget:last-child > #workspaces {
+    margin-right: 0;
+}
+
+label:focus {
+    background-color: #000000;
+}

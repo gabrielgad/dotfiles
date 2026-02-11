@@ -1,0 +1,124 @@
+/* {{metadata.name}} Rofi Theme */
+
+* {
+    background:     {{surface.primary}};
+    background-alt: {{semantic.hover}};
+    foreground:     {{text.primary}};
+    selected:       {{accent.primary}};
+    active:         {{semantic.active}};
+    urgent:         {{accent.tertiary}};
+    border-color:   {{accent.tertiary}};
+
+    font: "Hack 14";
+    border-radius: 0px;
+}
+
+window {
+    width: 600px;
+    transparency: "real";
+    background-color: @background;
+    border: 2px solid;
+    border-color: @border-color;
+    padding: 0px;
+}
+
+mainbox {
+    background-color: transparent;
+    children: [ inputbar, message, listview ];
+    padding: 10px;
+}
+
+inputbar {
+    background-color: @background-alt;
+    text-color: @foreground;
+    padding: 10px;
+    margin: 0px 0px 10px 0px;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    background-color: transparent;
+    text-color: @foreground;
+    padding: 0px 10px 0px 0px;
+}
+
+entry {
+    background-color: transparent;
+    text-color: @foreground;
+    placeholder-color: {{text.tertiary}};
+    placeholder: "Search...";
+}
+
+listview {
+    background-color: transparent;
+    columns: 1;
+    lines: 12;
+    cycle: true;
+    dynamic: true;
+    scrollbar: false;
+    layout: vertical;
+    spacing: 0px;
+}
+
+element {
+    background-color: transparent;
+    text-color: @foreground;
+    padding: 8px;
+    orientation: horizontal;
+}
+
+element-icon {
+    background-color: transparent;
+    size: 24px;
+    padding: 0px 10px 0px 0px;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+
+element normal.normal,
+element alternate.normal {
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+element selected.normal {
+    background-color: @selected;
+    text-color: {{text.primary}};
+}
+
+element normal.active,
+element alternate.active {
+    background-color: @active;
+    text-color: @foreground;
+}
+
+element selected.active {
+    background-color: @selected;
+    text-color: {{text.primary}};
+}
+
+element normal.urgent,
+element alternate.urgent {
+    background-color: @urgent;
+    text-color: @foreground;
+}
+
+element selected.urgent {
+    background-color: @urgent;
+    text-color: {{text.primary}};
+}
+
+message {
+    background-color: @background-alt;
+    text-color: @foreground;
+    padding: 10px;
+}
+
+textbox {
+    background-color: transparent;
+    text-color: @foreground;
+}

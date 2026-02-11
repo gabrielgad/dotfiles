@@ -1,0 +1,28 @@
+# {{metadata.name}} Mako Theme
+
+# Global defaults
+anchor=top-right
+default-timeout=8000
+width=420
+height=110
+text-color={{text.primary}}
+border-color={{accent.tertiary}}
+background-color={{surface.primary}}
+padding=10
+border-size=2
+max-icon-size=32
+outer-margin=20
+
+[app-name=Spotify]
+invisible=1
+
+[mode=do-not-disturb]
+invisible=true
+
+[mode=do-not-disturb app-name=notify-send]
+invisible=false
+
+[urgency=critical]
+default-timeout=0
+border-color={{accent.tertiary}}
+text-color={{accent.tertiary}}

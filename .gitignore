@@ -1,0 +1,21 @@
+# Themix-generated nvim colorschemes
+nvim/colors/
+nvim/lua/golden-lion/
+nvim/lua/breath-darker/
+
+# Theme symlink + generated theme dirs
+themes/*/
+!themes/scripts/
+!themes/templates/
+themes/current
+
+# Kitty theme (symlink managed by themix)
+kitty/theme.conf
+
+# Hypr theme files (symlinks managed by themix)
+hypr/theme.conf
+hypr/hyprlock-theme.conf
+
+# Nushell runtime files
+nushell/history.*
+nushell/zoxide.nu

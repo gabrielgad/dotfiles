@@ -1,0 +1,148 @@
+# {{metadata.name}} Theme for Yazi
+# Generated from: {{metadata.wallpaper}}
+
+[mgr]
+cwd = { fg = "{{accent.primary}}", bold = true }
+hovered = { reversed = true }
+preview_hovered = { underline = true }
+
+# Tabs
+tab_active = { fg = "{{surface.primary}}", bg = "{{accent.primary}}" }
+tab_inactive = { fg = "{{text.secondary}}", bg = "{{surface.secondary}}" }
+tab_width = 1
+
+# Selection
+selection = { fg = "{{surface.primary}}", bg = "{{accent.primary}}", bold = true }
+
+# Border
+border_symbol = "│"
+border_style = { fg = "{{accent.secondary}}" }
+
+# Markers
+marker_selected = { fg = "{{accent.primary}}", bg = "{{accent.primary}}" }
+marker_copied = { fg = "{{terminal.color3}}", bg = "{{terminal.color3}}" }
+marker_cut = { fg = "{{terminal.color1}}", bg = "{{terminal.color1}}" }
+
+# Count
+count_copied = { fg = "{{surface.primary}}", bg = "{{terminal.color3}}" }
+count_cut = { fg = "{{surface.primary}}", bg = "{{terminal.color1}}" }
+count_selected = { fg = "{{surface.primary}}", bg = "{{accent.primary}}" }
+
+[mode]
+normal_main = { fg = "{{surface.primary}}", bg = "{{accent.primary}}", bold = true }
+normal_alt = { fg = "{{accent.primary}}", bg = "{{surface.secondary}}" }
+
+select_main = { fg = "{{surface.primary}}", bg = "{{terminal.color3}}", bold = true }
+select_alt = { fg = "{{terminal.color3}}", bg = "{{surface.secondary}}" }
+
+unset_main = { fg = "{{surface.primary}}", bg = "{{terminal.color1}}", bold = true }
+unset_alt = { fg = "{{terminal.color1}}", bg = "{{surface.secondary}}" }
+
+[status]
+separator_open = ""
+separator_close = ""
+separator_style = { fg = "{{surface.secondary}}", bg = "{{surface.secondary}}" }
+
+# Mode indicators
+mode_normal = { fg = "{{surface.primary}}", bg = "{{accent.primary}}", bold = true }
+mode_select = { fg = "{{surface.primary}}", bg = "{{terminal.color3}}", bold = true }
+mode_unset = { fg = "{{surface.primary}}", bg = "{{terminal.color1}}", bold = true }
+
+# Progress
+progress_label = { fg = "{{text.primary}}", bold = true }
+progress_normal = { fg = "{{accent.primary}}", bg = "{{surface.secondary}}" }
+progress_error = { fg = "{{terminal.color1}}", bg = "{{surface.secondary}}" }
+
+# Permissions
+permissions_t = { fg = "{{accent.primary}}" }
+permissions_r = { fg = "{{terminal.color2}}" }
+permissions_w = { fg = "{{terminal.color3}}" }
+permissions_x = { fg = "{{terminal.color1}}" }
+permissions_s = { fg = "{{terminal.color5}}" }
+
+[select]
+border = { fg = "{{accent.primary}}" }
+active = { fg = "{{surface.primary}}", bg = "{{accent.primary}}" }
+inactive = { fg = "{{text.secondary}}" }
+
+[input]
+border = { fg = "{{accent.primary}}" }
+title = { fg = "{{accent.primary}}" }
+value = { fg = "{{text.primary}}" }
+selected = { reversed = true }
+
+[completion]
+border = { fg = "{{accent.primary}}" }
+active = { fg = "{{surface.primary}}", bg = "{{accent.primary}}" }
+inactive = { fg = "{{text.secondary}}" }
+icon_file = ""
+icon_folder = ""
+icon_command = ""
+
+[tasks]
+border = { fg = "{{accent.primary}}" }
+title = { fg = "{{accent.primary}}" }
+hovered = { fg = "{{surface.primary}}", bg = "{{accent.primary}}" }
+
+[which]
+cols = 3
+mask = { bg = "{{surface.secondary}}" }
+cand = { fg = "{{accent.primary}}" }
+rest = { fg = "{{text.tertiary}}" }
+desc = { fg = "{{text.secondary}}" }
+separator = "  "
+separator_style = { fg = "{{surface.tertiary}}" }
+
+[help]
+on = { fg = "{{accent.primary}}" }
+run = { fg = "{{accent.secondary}}" }
+desc = { fg = "{{text.primary}}" }
+hovered = { reversed = true }
+footer = { fg = "{{text.secondary}}", bg = "{{surface.secondary}}" }
+
+[notify]
+title_info = { fg = "{{accent.primary}}" }
+title_warn = { fg = "{{terminal.color3}}" }
+title_error = { fg = "{{terminal.color1}}" }
+
+[filetype]
+rules = [
+    # Directories - accent color
+    { mime = "inode/directory", fg = "{{accent.primary}}", bold = true },
+
+    # Symlinks
+    { name = "*", is = "link", fg = "{{terminal.color6}}" },
+
+    # Executables
+    { name = "*", is = "exec", fg = "{{terminal.color2}}" },
+
+    # Hidden files - dimmed
+    { name = ".*", fg = "{{text.tertiary}}" },
+
+    # Code files - secondary accent
+    { name = "*.{rs,go,py,js,ts,jsx,tsx,c,cpp,h,hpp,java,rb,php,lua}", fg = "{{accent.secondary}}" },
+
+    # Config files - yellow/orange
+    { name = "*.{json,yaml,yml,toml,xml,ini,conf,config}", fg = "{{terminal.color3}}" },
+
+    # Archives - magenta
+    { mime = "application/{zip,gzip,x-tar,x-7z-compressed,x-rar,x-bzip2,x-xz}", fg = "{{terminal.color5}}" },
+
+    # Images - cyan
+    { mime = "image/*", fg = "{{terminal.color6}}" },
+
+    # Videos - red
+    { mime = "video/*", fg = "{{terminal.color1}}" },
+
+    # Audio - magenta
+    { mime = "audio/*", fg = "{{terminal.color5}}" },
+
+    # Documents
+    { name = "*.{pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp}", fg = "{{terminal.color3}}" },
+
+    # Markdown/text
+    { name = "*.{md,txt,rst}", fg = "{{text.primary}}" },
+
+    # Default
+    { name = "*", fg = "{{text.secondary}}" },
+]

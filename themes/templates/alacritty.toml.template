@@ -1,0 +1,29 @@
+# {{metadata.name}} Alacritty Theme
+[colors]
+[colors.primary]
+background = '{{surface.primary}}'
+foreground = '{{text.primary}}'
+
+[colors.normal]
+black   = "{{terminal.color0}}"
+red     = "{{terminal.color1}}"
+green   = "{{terminal.color2}}"
+yellow  = "{{terminal.color3}}"
+blue    = "{{terminal.color4}}"
+magenta = "{{terminal.color5}}"
+cyan    = "{{terminal.color6}}"
+white   = "{{terminal.color7}}"
+
+[colors.bright]
+black   = "{{terminal.color8}}"
+red     = "{{terminal.color9}}"
+green   = "{{terminal.color10}}"
+yellow  = "{{terminal.color11}}"
+blue    = "{{terminal.color12}}"
+magenta = "{{terminal.color13}}"
+cyan    = "{{terminal.color14}}"
+white   = "{{terminal.color15}}"
+
+[colors.cursor]
+text   = "{{surface.primary}}"
+cursor = "{{text.secondary}}"

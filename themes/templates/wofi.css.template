@@ -1,0 +1,233 @@
+/* {{metadata.name}} Wofi Theme */
+@define-color background {{surface.primary}};
+@define-color foreground {{text.primary}};
+@define-color accent {{accent.primary}};
+@define-color hover {{semantic.hover}};
+@define-color border {{accent.tertiary}};
+@define-color text-on-accent {{text.primary}};
+
+* {
+    font-family: "Hack", monospace;
+    font-size: 16px;
+}
+
+window {
+    background-color: @background;
+    border: 2px solid @border;
+}
+
+#input {
+    margin: 5px;
+    border-radius: 0px;
+    border: none;
+    background-color: @hover;
+    color: @foreground;
+    padding: 8px;
+}
+
+#inner-box {
+    background-color: @background;
+}
+
+#outer-box {
+    margin: 0px;
+    padding: 10px;
+    background-color: @background;
+}
+
+#scroll {
+    margin: 5px;
+}
+
+/* Base text styling */
+#text {
+    color: @foreground;
+    padding: 5px;
+}
+
+/* Base entry styling */
+#entry {
+    padding: 8px;
+    background-color: @background;
+    color: @foreground;
+}
+
+#entry * {
+    color: @foreground;
+    background-color: transparent;
+}
+
+#entry label {
+    color: @foreground;
+    background-color: transparent;
+}
+
+#entry #text {
+    color: @foreground;
+    background-color: transparent;
+}
+
+/* Explicitly style odd rows - prevent alternating colors */
+#entry:nth-child(odd) {
+    background-color: @background;
+    color: @foreground;
+}
+
+#entry:nth-child(odd) * {
+    color: @foreground;
+}
+
+#entry:nth-child(odd) label {
+    color: @foreground;
+}
+
+#entry:nth-child(odd) #text {
+    color: @foreground;
+}
+
+/* Even rows - same as odd for consistency */
+#entry:nth-child(even) {
+    background-color: @background;
+    color: @foreground;
+}
+
+#entry:nth-child(even) * {
+    color: @foreground;
+}
+
+#entry:nth-child(even) label {
+    color: @foreground;
+}
+
+#entry:nth-child(even) #text {
+    color: @foreground;
+}
+
+/* Hover state - applies to ALL entries */
+#entry:hover,
+#entry:nth-child(odd):hover,
+#entry:nth-child(even):hover {
+    background-color: @accent;
+    color: @text-on-accent;
+}
+
+#entry:hover *,
+#entry:nth-child(odd):hover *,
+#entry:nth-child(even):hover * {
+    color: @text-on-accent;
+}
+
+#entry:hover label,
+#entry:nth-child(odd):hover label,
+#entry:nth-child(even):hover label {
+    color: @text-on-accent;
+}
+
+#entry:hover #text,
+#entry:nth-child(odd):hover #text,
+#entry:nth-child(even):hover #text {
+    color: @text-on-accent;
+}
+
+/* Selected state - applies to ALL entries */
+#entry:selected,
+#entry:nth-child(odd):selected,
+#entry:nth-child(even):selected {
+    background-color: @accent;
+    color: @text-on-accent;
+}
+
+#entry:selected *,
+#entry:nth-child(odd):selected *,
+#entry:nth-child(even):selected * {
+    color: @text-on-accent;
+}
+
+#entry:selected #text,
+#entry:nth-child(odd):selected #text,
+#entry:nth-child(even):selected #text {
+    color: @text-on-accent;
+    font-weight: bold;
+}
+
+#entry:selected label,
+#entry:nth-child(odd):selected label,
+#entry:nth-child(even):selected label {
+    color: @text-on-accent;
+}
+
+/* Focus state - same as selected */
+#entry:focus,
+#entry:nth-child(odd):focus,
+#entry:nth-child(even):focus {
+    background-color: @accent;
+    color: @text-on-accent;
+}
+
+#entry:focus *,
+#entry:nth-child(odd):focus *,
+#entry:nth-child(even):focus * {
+    color: @text-on-accent;
+}
+
+#entry:focus label,
+#entry:nth-child(odd):focus label,
+#entry:nth-child(even):focus label {
+    color: @text-on-accent;
+}
+
+#entry:focus #text,
+#entry:nth-child(odd):focus #text,
+#entry:nth-child(even):focus #text {
+    color: @text-on-accent;
+    font-weight: bold;
+}
+
+/* Active/Activated state - same as selected */
+#entry:active,
+#entry:nth-child(odd):active,
+#entry:nth-child(even):active {
+    background-color: @accent;
+    color: @text-on-accent;
+}
+
+#entry:active *,
+#entry:nth-child(odd):active *,
+#entry:nth-child(even):active * {
+    color: @text-on-accent;
+}
+
+#entry:active label,
+#entry:nth-child(odd):active label,
+#entry:nth-child(even):active label {
+    color: @text-on-accent;
+}
+
+#entry:active #text,
+#entry:nth-child(odd):active #text,
+#entry:nth-child(even):active #text {
+    color: @text-on-accent;
+}
+
+/* Image styling - prevent black boxes */
+#entry image,
+#entry:nth-child(odd) image,
+#entry:nth-child(even) image {
+    background-color: transparent;
+    padding-right: 8px;
+}
+
+#entry:hover image,
+#entry:nth-child(odd):hover image,
+#entry:nth-child(even):hover image,
+#entry:selected image,
+#entry:nth-child(odd):selected image,
+#entry:nth-child(even):selected image,
+#entry:focus image,
+#entry:nth-child(odd):focus image,
+#entry:nth-child(even):focus image,
+#entry:active image,
+#entry:nth-child(odd):active image,
+#entry:nth-child(even):active image {
+    background-color: transparent;
+}

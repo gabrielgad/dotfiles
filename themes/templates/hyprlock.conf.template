@@ -1,0 +1,7 @@
+# {{metadata.name}} Hyprlock Theme - Color Variables
+$outer_color = rgb({{accent.tertiary_rgb}})
+$inner_color = rgb({{surface.primary_rgb}})
+$font_color = rgb({{text.primary_rgb}})
+$check_color = rgb({{accent.primary_rgb}})
+$fail_color = rgb({{accent.secondary_rgb}})
+$label_color = rgb({{text.primary_rgb}})

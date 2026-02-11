@@ -1,0 +1,71 @@
+# Bottom (btm) configuration - Themix themed
+# Theme: {{metadata.name}}
+# Place at ~/.config/bottom/bottom.toml
+
+# General settings
+[flags]
+hide_avg_cpu = false
+hide_table_gap = true
+dot_marker = false
+rate = "1s"
+default_widget_type = "process"
+mem_as_value = false
+
+# CPU styling
+[styles.cpu]
+all_entry_color = "{{text.secondary}}"
+avg_entry_color = "{{accent.secondary}}"
+cpu_core_colors = [
+    "{{terminal.color1}}",
+    "{{terminal.color2}}",
+    "{{terminal.color3}}",
+    "{{terminal.color4}}",
+    "{{terminal.color5}}",
+    "{{terminal.color6}}",
+    "{{accent.primary}}",
+    "{{accent.secondary}}"
+]
+
+# Memory styling
+[styles.memory]
+ram_color = "{{terminal.color2}}"
+cache_color = "{{terminal.color6}}"
+swap_color = "{{terminal.color3}}"
+arc_color = "{{terminal.color4}}"
+gpu_colors = [
+    "{{terminal.color5}}",
+    "{{accent.primary}}",
+    "{{terminal.color6}}",
+    "{{accent.secondary}}"
+]
+
+# Network styling
+[styles.network]
+rx_color = "{{terminal.color2}}"
+tx_color = "{{terminal.color1}}"
+rx_total_color = "{{terminal.color6}}"
+tx_total_color = "{{terminal.color5}}"
+
+# Battery styling
+[styles.battery]
+high_battery_color = "{{terminal.color2}}"
+medium_battery_color = "{{terminal.color3}}"
+low_battery_color = "{{terminal.color1}}"
+
+# Table headers and content
+[styles.tables]
+headers = { color = "{{accent.primary}}", bold = true }
+
+# Graph styling
+[styles.graphs]
+graph_color = "{{text.tertiary}}"
+legend_text = { color = "{{text.secondary}}" }
+
+# Widget borders and text
+[styles.widgets]
+border_color = "{{border.subtle}}"
+selected_border_color = "{{accent.primary}}"
+widget_title = { color = "{{text.primary}}", bold = true }
+text = { color = "{{text.primary}}" }
+selected_text = { color = "{{surface.primary}}", bg_color = "{{accent.primary}}" }
+disabled_text = { color = "{{text.tertiary}}" }

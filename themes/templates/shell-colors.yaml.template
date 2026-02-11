@@ -1,0 +1,63 @@
+# Shell-agnostic color export for themix
+# Generated from: {{metadata.wallpaper}}
+# Theme: {{metadata.name}}
+
+theme: {{metadata.name}}
+
+colors:
+  # Base colors
+  bg: "{{surface.primary}}"
+  fg: "{{text.primary}}"
+
+  # Accent colors
+  accent: "{{accent.primary}}"
+  accent2: "{{accent.secondary}}"
+
+  # Selection
+  selection_bg: "{{accent.primary}}"
+  selection_fg: "{{surface.primary}}"
+
+  # Surfaces
+  surface1: "{{surface.primary}}"
+  surface2: "{{surface.secondary}}"
+  surface3: "{{surface.tertiary}}"
+
+  # Text levels
+  text1: "{{text.primary}}"
+  text2: "{{text.secondary}}"
+  text3: "{{text.tertiary}}"
+
+  # Borders
+  border: "{{border.primary}}"
+  border_subtle: "{{border.subtle}}"
+
+  # Semantic
+  active: "{{semantic.active}}"
+  inactive: "{{semantic.inactive}}"
+  hover: "{{semantic.hover}}"
+
+  # Terminal ANSI colors (normal)
+  black: "{{terminal.color0}}"
+  red: "{{terminal.color1}}"
+  green: "{{terminal.color2}}"
+  yellow: "{{terminal.color3}}"
+  blue: "{{terminal.color4}}"
+  magenta: "{{terminal.color5}}"
+  cyan: "{{terminal.color6}}"
+  white: "{{terminal.color7}}"
+
+  # Terminal ANSI colors (bright)
+  bright_black: "{{terminal.color8}}"
+  bright_red: "{{terminal.color9}}"
+  bright_green: "{{terminal.color10}}"
+  bright_yellow: "{{terminal.color11}}"
+  bright_blue: "{{terminal.color12}}"
+  bright_magenta: "{{terminal.color13}}"
+  bright_cyan: "{{terminal.color14}}"
+  bright_white: "{{terminal.color15}}"
+
+# Pre-formatted FZF color string
+fzf_colors: "bg:{{surface.primary}},bg+:{{surface.tertiary}},fg:{{text.primary}},fg+:{{text.primary}},hl:{{accent.primary}},hl+:{{accent.primary}},info:{{accent.secondary}},marker:{{accent.primary}},prompt:{{accent.primary}},spinner:{{accent.secondary}},pointer:{{accent.primary}},header:{{text.secondary}},border:{{border.subtle}},gutter:{{surface.primary}}"
+
+# Bat theme (reference or path)
+bat_theme: "base16"

@@ -1,0 +1,19 @@
+// Zellij theme configuration - Themix themed
+// Theme: {{metadata.name}}
+// Place in ~/.config/zellij/themes/ and add 'theme "themix"' to config.kdl
+
+themes {
+    themix {
+        fg "{{text.primary}}"
+        bg "{{surface.primary}}"
+        black "{{terminal.color0}}"
+        red "{{terminal.color1}}"
+        green "{{terminal.color2}}"
+        yellow "{{terminal.color3}}"
+        blue "{{terminal.color4}}"
+        magenta "{{terminal.color5}}"
+        cyan "{{terminal.color6}}"
+        white "{{terminal.color7}}"
+        orange "{{accent.primary}}"
+    }
+}

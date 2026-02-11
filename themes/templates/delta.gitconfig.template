@@ -1,0 +1,51 @@
+# Delta configuration - Themix themed
+# Theme: {{metadata.name}}
+# Include from your ~/.gitconfig:
+#   [include]
+#       path = ~/.config/themes/current/delta.gitconfig
+
+[core]
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    dark = true
+    side-by-side = false
+    line-numbers = true
+
+    # File header
+    file-style = "{{accent.primary}} bold"
+    file-decoration-style = "{{accent.primary}} ul"
+    hunk-header-decoration-style = "{{border.subtle}} box"
+
+    # Line numbers
+    line-numbers-left-style = "{{text.tertiary}}"
+    line-numbers-right-style = "{{text.tertiary}}"
+    line-numbers-minus-style = "{{terminal.color1}}"
+    line-numbers-plus-style = "{{terminal.color2}}"
+    line-numbers-zero-style = "{{text.tertiary}}"
+
+    # Diff styling - using syntax highlighting with themed backgrounds
+    minus-style = "syntax {{surface.tertiary}}"
+    minus-emph-style = "syntax {{terminal.color1}}"
+    plus-style = "syntax {{surface.tertiary}}"
+    plus-emph-style = "syntax {{terminal.color2}}"
+    zero-style = "syntax"
+
+    # Blame
+    blame-palette = "{{surface.primary}} {{surface.secondary}} {{surface.tertiary}}"
+
+    # Merge conflicts
+    merge-conflict-begin-symbol = "▼"
+    merge-conflict-end-symbol = "▲"
+    merge-conflict-ours-diff-header-style = "{{terminal.color3}} bold"
+    merge-conflict-theirs-diff-header-style = "{{terminal.color5}} bold"
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default

@@ -1,0 +1,148 @@
+# storm-peaks Theme for Yazi
+# Generated from: /home/gabe/Pictures/wallpapers/pexels-eberhardgross-640781.jpg
+
+[mgr]
+cwd = { fg = "#E5C9B5", bold = true }
+hovered = { reversed = true }
+preview_hovered = { underline = true }
+
+# Tabs
+tab_active = { fg = "#111B0E", bg = "#E5C9B5" }
+tab_inactive = { fg = "#E8C9B0", bg = "#192914" }
+tab_width = 1
+
+# Selection
+selection = { fg = "#111B0E", bg = "#E5C9B5", bold = true }
+
+# Border
+border_symbol = "│"
+border_style = { fg = "#CDAE9E" }
+
+# Markers
+marker_selected = { fg = "#E5C9B5", bg = "#E5C9B5" }
+marker_copied = { fg = "#DB8E57", bg = "#DB8E57" }
+marker_cut = { fg = "#D78042", bg = "#D78042" }
+
+# Count
+count_copied = { fg = "#111B0E", bg = "#DB8E57" }
+count_cut = { fg = "#111B0E", bg = "#D78042" }
+count_selected = { fg = "#111B0E", bg = "#E5C9B5" }
+
+[mode]
+normal_main = { fg = "#111B0E", bg = "#E5C9B5", bold = true }
+normal_alt = { fg = "#E5C9B5", bg = "#192914" }
+
+select_main = { fg = "#111B0E", bg = "#DB8E57", bold = true }
+select_alt = { fg = "#DB8E57", bg = "#192914" }
+
+unset_main = { fg = "#111B0E", bg = "#D78042", bold = true }
+unset_alt = { fg = "#D78042", bg = "#192914" }
+
+[status]
+separator_open = ""
+separator_close = ""
+separator_style = { fg = "#192914", bg = "#192914" }
+
+# Mode indicators
+mode_normal = { fg = "#111B0E", bg = "#E5C9B5", bold = true }
+mode_select = { fg = "#111B0E", bg = "#DB8E57", bold = true }
+mode_unset = { fg = "#111B0E", bg = "#D78042", bold = true }
+
+# Progress
+progress_label = { fg = "#F4E4D7", bold = true }
+progress_normal = { fg = "#E5C9B5", bg = "#192914" }
+progress_error = { fg = "#D78042", bg = "#192914" }
+
+# Permissions
+permissions_t = { fg = "#E5C9B5" }
+permissions_r = { fg = "#C67439" }
+permissions_w = { fg = "#DB8E57" }
+permissions_x = { fg = "#D78042" }
+permissions_s = { fg = "#C68353" }
+
+[select]
+border = { fg = "#E5C9B5" }
+active = { fg = "#111B0E", bg = "#E5C9B5" }
+inactive = { fg = "#E8C9B0" }
+
+[input]
+border = { fg = "#E5C9B5" }
+title = { fg = "#E5C9B5" }
+value = { fg = "#F4E4D7" }
+selected = { reversed = true }
+
+[completion]
+border = { fg = "#E5C9B5" }
+active = { fg = "#111B0E", bg = "#E5C9B5" }
+inactive = { fg = "#E8C9B0" }
+icon_file = ""
+icon_folder = ""
+icon_command = ""
+
+[tasks]
+border = { fg = "#E5C9B5" }
+title = { fg = "#E5C9B5" }
+hovered = { fg = "#111B0E", bg = "#E5C9B5" }
+
+[which]
+cols = 3
+mask = { bg = "#192914" }
+cand = { fg = "#E5C9B5" }
+rest = { fg = "#DDAE88" }
+desc = { fg = "#E8C9B0" }
+separator = "  "
+separator_style = { fg = "#263D1F" }
+
+[help]
+on = { fg = "#E5C9B5" }
+run = { fg = "#CDAE9E" }
+desc = { fg = "#F4E4D7" }
+hovered = { reversed = true }
+footer = { fg = "#E8C9B0", bg = "#192914" }
+
+[notify]
+title_info = { fg = "#E5C9B5" }
+title_warn = { fg = "#DB8E57" }
+title_error = { fg = "#D78042" }
+
+[filetype]
+rules = [
+    # Directories - accent color
+    { mime = "inode/directory", fg = "#E5C9B5", bold = true },
+
+    # Symlinks
+    { name = "*", is = "link", fg = "#C68353" },
+
+    # Executables
+    { name = "*", is = "exec", fg = "#C67439" },
+
+    # Hidden files - dimmed
+    { name = ".*", fg = "#DDAE88" },
+
+    # Code files - secondary accent
+    { name = "*.{rs,go,py,js,ts,jsx,tsx,c,cpp,h,hpp,java,rb,php,lua}", fg = "#CDAE9E" },
+
+    # Config files - yellow/orange
+    { name = "*.{json,yaml,yml,toml,xml,ini,conf,config}", fg = "#DB8E57" },
+
+    # Archives - magenta
+    { mime = "application/{zip,gzip,x-tar,x-7z-compressed,x-rar,x-bzip2,x-xz}", fg = "#C68353" },
+
+    # Images - cyan
+    { mime = "image/*", fg = "#C68353" },
+
+    # Videos - red
+    { mime = "video/*", fg = "#D78042" },
+
+    # Audio - magenta
+    { mime = "audio/*", fg = "#C68353" },
+
+    # Documents
+    { name = "*.{pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp}", fg = "#DB8E57" },
+
+    # Markdown/text
+    { name = "*.{md,txt,rst}", fg = "#F4E4D7" },
+
+    # Default
+    { name = "*", fg = "#E8C9B0" },
+]

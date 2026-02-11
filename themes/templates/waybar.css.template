@@ -1,0 +1,36 @@
+/* {{metadata.name}} Theme Colors */
+/* Generated from: {{metadata.wallpaper}} */
+
+@define-color foreground {{text.primary}};
+@define-color background {{surface.primary}};
+
+/* UI accent colors from theme */
+@define-color accent {{accent.primary}};
+@define-color accent-bright {{text.primary}};
+@define-color accent-medium {{accent.tertiary}};
+@define-color active {{semantic.active}};
+@define-color active-fg {{text.primary}};
+@define-color hover {{semantic.hover}};
+@define-color urgent {{text.primary}};
+@define-color border {{border.primary}};
+
+/* Module-specific colors - all use primary accent for consistency */
+/* Override syntax: use user-mappings.yaml to customize (see SCHEMA.md) */
+@define-color cpu {{accent.primary}};
+@define-color memory {{accent.primary}};
+@define-color storage {{accent.primary}};
+@define-color volume {{accent.primary}};
+@define-color backlight {{accent.primary}};
+@define-color battery {{accent.primary}};
+@define-color clock {{accent.primary}};
+@define-color network {{accent.primary}};
+@define-color bluetooth {{accent.primary}};
+@define-color temperature {{accent.primary}};
+
+/* Custom module colors */
+@define-color gpu {{accent.primary}};
+@define-color weather {{accent.primary}};
+@define-color spotify {{accent.primary}};
+@define-color netinfo {{accent.primary}};
+@define-color power {{accent.primary}};
+@define-color display-profile {{accent.primary}};

@@ -1,0 +1,35 @@
+/* GTK4 Theme Overrides - {{metadata.name}} */
+
+/* Toggle button icon fix - dark icons on light accent backgrounds */
+button.flat.toggle,
+button.toggle.flat,
+button.image-button.flat.toggle,
+button.flat.image-button.toggle {
+    color: {{text.primary}};
+    -gtk-icon-style: symbolic;
+}
+
+button.flat.toggle image,
+button.toggle.flat image,
+button.image-button.flat.toggle image,
+button.flat.image-button.toggle image,
+button.flat.toggle > image,
+button.toggle.flat > image,
+button.image-button.flat.toggle > image,
+button.flat.image-button.toggle > image {
+    color: {{text.primary}};
+    -gtk-icon-style: symbolic;
+    -gtk-icon-filter: none;
+}
+
+/* Default flat buttons (non-toggle) use light icons */
+button.flat:not(.toggle),
+button.flat.image-button:not(.toggle) {
+    color: {{text.primary}};
+}
+
+/* Suggested action / accent buttons have light backgrounds */
+button.suggested-action,
+button.flat.suggested-action {
+    color: {{text.primary}};
+}

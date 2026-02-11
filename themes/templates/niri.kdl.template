@@ -1,0 +1,48 @@
+// {{metadata.name}} Niri Theme
+// Generated from: {{metadata.wallpaper}}
+
+// Window layout and theming
+layout {
+    gaps 5
+
+    // Focus ring disabled - using border instead
+    focus-ring {
+        off
+    }
+
+    // Border (around all 4 sides)
+    border {
+        width 4
+        active-gradient from="{{border.primary}}" to="{{accent.primary}}" angle=45
+        inactive-color "{{semantic.inactive}}"
+    }
+
+    // Window shadows
+    shadow {
+        on
+        softness 30
+        spread 5
+        offset x=0 y=5
+        color "{{surface.primary}}cc"
+    }
+}
+
+// Window rules for rounded corners
+window-rule {
+    geometry-corner-radius 4
+    clip-to-geometry true
+}
+
+// Block sensitive windows from screen capture
+window-rule {
+    match app-id=r#"^([Pp]roton-authenticator)$"#
+    match title=r#"^([Pp]roton.*[Aa]uthenticator)$"#
+    block-out-from "screen-capture"
+}
+
+// Animation settings
+animations {
+    // Niri uses spring-based physics animations
+    // Adjust slowdown for snappier or smoother feel
+    // slowdown 1.0
+}

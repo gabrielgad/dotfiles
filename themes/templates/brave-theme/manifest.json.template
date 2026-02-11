@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+  "name": "{{metadata.name}}",
+  "version": "1.0",
+  "description": "{{metadata.name}} theme - Generated from wallpaper",
+  "theme": {
+    "images": {
+      "theme_frame": "images/theme_frame.png",
+      "theme_toolbar": "images/theme_toolbar.png",
+      "theme_tab_background": "images/theme_tab_background.png"
+    },
+    "colors": {
+      "frame": {{rgb.foreground}},
+      "frame_inactive": {{rgb.background}},
+      "toolbar": {{rgb.accent_secondary}},
+      "tab_text": {{rgb.foreground}},
+      "tab_background_text": {{rgb.foreground}},
+      "background_tab": {{rgb.background}},
+      "bookmark_text": {{rgb.accent_quaternary}},
+      "button_background": {{rgb.accent_secondary}},
+      "ntp_background": {{rgb.background}},
+      "ntp_text": {{rgb.foreground}},
+      "ntp_link": {{rgb.accent_quaternary}},
+      "ntp_header": {{rgb.accent_tertiary}},
+      "ntp_section": {{rgb.foreground}}
+    },
+    "tints": {
+      "buttons": [0.5, 0.5, 0.7]
+    }
+  }
+}

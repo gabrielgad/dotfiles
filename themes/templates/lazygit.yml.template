@@ -1,0 +1,59 @@
+# Lazygit configuration - Themix themed
+# Theme: {{metadata.name}}
+# yaml-language-server: $schema=https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json
+
+gui:
+  theme:
+    # Active panel border
+    activeBorderColor:
+      - '{{accent.primary}}'
+      - bold
+
+    # Inactive panel border
+    inactiveBorderColor:
+      - '{{border.subtle}}'
+
+    # Options/keybindings text color
+    optionsTextColor:
+      - '{{accent.primary}}'
+
+    # Selected line background
+    selectedLineBgColor:
+      - '{{surface.tertiary}}'
+
+    # Cherry-picked commits styling
+    cherryPickedCommitBgColor:
+      - '{{surface.quaternary}}'
+    cherryPickedCommitFgColor:
+      - '{{accent.primary}}'
+
+    # Unstaged changes indicator
+    unstagedChangesColor:
+      - '{{terminal.color1}}'
+
+    # Default text color
+    defaultFgColor:
+      - '{{text.primary}}'
+
+    # Search mode border
+    searchingActiveBorderColor:
+      - '{{terminal.color3}}'
+
+  # Border style
+  border: rounded
+
+  # Show random tip on startup
+  showRandomTip: false
+
+  # Show bottom line (keybindings)
+  showBottomLine: true
+
+# Pager configuration (use delta for diffs)
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never
+
+# Author colors (semantic mapping)
+  authorColors:
+    '*': '{{text.secondary}}'

@@ -1,0 +1,41 @@
+# Tmux theme configuration - Themix themed
+# Theme: {{metadata.name}}
+# Source this from your main tmux.conf: source-file ~/.config/themes/current/tmux.conf
+
+# Status bar position
+set -g status-position bottom
+set -g status-justify left
+
+# Status bar styling
+set -g status-style "bg={{surface.secondary}},fg={{text.primary}}"
+
+# Status bar left (session name)
+set -g status-left-length 20
+set -g status-left "#[bg={{accent.primary}},fg={{surface.primary}},bold] #S #[bg={{surface.secondary}},fg={{accent.primary}}]"
+
+# Status bar right (date/time)
+set -g status-right-length 50
+set -g status-right "#[fg={{text.secondary}}]%H:%M #[fg={{accent.primary}}]│ #[fg={{text.secondary}}]%d-%b-%Y "
+
+# Window status (tabs)
+set -g window-status-format "#[fg={{text.tertiary}}] #I:#W "
+set -g window-status-current-format "#[bg={{surface.tertiary}},fg={{accent.primary}},bold] #I:#W "
+set -g window-status-separator ""
+
+# Pane borders
+set -g pane-border-style "fg={{border.subtle}}"
+set -g pane-active-border-style "fg={{accent.primary}}"
+
+# Message styling (command mode)
+set -g message-style "bg={{surface.tertiary}},fg={{text.primary}}"
+set -g message-command-style "bg={{surface.tertiary}},fg={{accent.primary}}"
+
+# Mode styling (copy mode, etc)
+set -g mode-style "bg={{accent.primary}},fg={{surface.primary}}"
+
+# Clock mode
+set -g clock-mode-colour "{{accent.primary}}"
+
+# Bell/activity
+set -g window-status-bell-style "bg={{terminal.color1}},fg={{surface.primary}}"
+set -g window-status-activity-style "fg={{terminal.color3}}"

@@ -1,0 +1,85 @@
+/* GTK3 Theme Overrides - {{metadata.name}} */
+
+/* Fix menubar item spacing */
+menubar > menuitem {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+menubar > menuitem > label {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+/* Fix toolbar button spacing */
+toolbar button,
+.toolbar button,
+toolbar toolbutton,
+toolbar toolbutton > button {
+    margin-left: 2px;
+    margin-right: 2px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+/* Add spacing below toolbar */
+toolbar,
+.toolbar {
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+}
+
+/* Add spacing above column headers */
+treeview header,
+.view header {
+    margin-top: 4px;
+    padding-top: 4px;
+}
+
+/* Fix sidebar section headers contrast */
+.sidebar .dim-label,
+.sidebar label.separator,
+placessidebar .dim-label,
+placessidebar label.separator {
+    opacity: 0.85;
+    color: {{text.primary}};
+}
+
+/* Ensure sidebar text is visible */
+.sidebar label,
+placessidebar label {
+    color: {{text.primary}};
+}
+
+/* Section headers */
+.sidebar > label,
+placessidebar > label {
+    color: {{accent.primary}};
+    opacity: 1;
+    font-weight: bold;
+}
+
+/* Toolbar button icon visibility */
+toolbar button,
+.toolbar button,
+toolbar toolbutton > button {
+    color: {{text.primary}};
+}
+
+toolbar button image,
+.toolbar button image,
+toolbar toolbutton > button image {
+    color: {{text.primary}};
+}
+
+/* Flat button colors for dark themes */
+button.flat,
+button.flat.image-button {
+    color: {{text.primary}};
+}
+
+button.flat image,
+button.flat.image-button image,
+button.image-button image {
+    color: {{text.primary}};
+}

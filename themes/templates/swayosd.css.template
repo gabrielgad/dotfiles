@@ -1,0 +1,6 @@
+/* {{metadata.name}} SwayOSD Theme */
+@define-color background-color {{surface.primary}};
+@define-color border-color {{accent.tertiary}};
+@define-color label {{text.secondary}};
+@define-color image {{accent.primary}};
+@define-color progress {{text.secondary}};

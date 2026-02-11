@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+#
+# Themix - Theme Management CLI
+# Generate, apply, and manage themes from wallpapers
+#
+# Usage: themix <command> [args]
+#
+# Commands:
+#   generate <image> [name]   Generate theme from wallpaper
+#   apply <theme>             Apply an existing theme
+#   rotate [--daily]          Rotate to random/daily theme
+#   list                      List available themes
+#   current                   Show current theme
+#   process <theme>           Process templates for theme
+#   help                      Show this help message
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS_DIR="${SCRIPT_DIR}/scripts"
+export THEMES_DIR="${SCRIPT_DIR}"
+
+VERSION="1.0.0"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+show_help() {
+    cat << EOF
+${CYAN}Themix${NC} - Theme Management CLI v${VERSION}
+
+${YELLOW}Usage:${NC}
+  themix <command> [arguments]
+
+${YELLOW}Commands:${NC}
+  ${GREEN}generate${NC} <image> [name]   Generate a new theme from a wallpaper
+                             Options: --apply, --mode=dark|light|auto
+
+  ${GREEN}apply${NC} <theme>             Apply an existing theme
+
+  ${GREEN}rotate${NC}                    Rotate to a random theme
+                             Options: --daily (same theme all day)
+
+  ${GREEN}list${NC}                      List all available themes
+
+  ${GREEN}current${NC}                   Show the current active theme
+
+  ${GREEN}process${NC} <theme>           Process templates for an existing theme
+
+  ${GREEN}help${NC}                      Show this help message
+
+${YELLOW}Examples:${NC}
+  themix generate ~/Pictures/sunset.jpg
+  themix generate ~/Pictures/forest.png my-forest --apply
+  themix apply sunset
+  themix rotate --daily
+  themix list
+
+${YELLOW}Requirements:${NC}
+  - Python 3 with PyYAML and Pillow
+  - ImageMagick (for Brave theme images)
+  - oomox-cli (optional, for GTK themes)
+
+EOF
+}
+
+cmd_generate() {
+    bash "${SCRIPTS_DIR}/generate-theme.sh" "$@"
+}
+
+cmd_apply() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: themix apply <theme-name>"
+        exit 1
+    fi
+    bash "${SCRIPTS_DIR}/apply-theme.sh" "$@"
+}
+
+cmd_rotate() {
+    bash "${SCRIPTS_DIR}/rotate-theme.sh" "$@"
+}
+
+cmd_list() {
+    bash "${SCRIPTS_DIR}/rotate-theme.sh" --list
+}
+
+cmd_current() {
+    bash "${SCRIPTS_DIR}/rotate-theme.sh" --current
+}
+
+cmd_process() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: themix process <theme-name>"
+        exit 1
+    fi
+    bash "${SCRIPTS_DIR}/process-templates.sh" "$@"
+}
+
+# Main
+main() {
+    local command="${1:-help}"
+    shift 2>/dev/null || true
+
+    case "$command" in
+        generate|gen|new)
+            cmd_generate "$@"
+            ;;
+        apply|set|use)
+            cmd_apply "$@"
+            ;;
+        rotate|random)
+            cmd_rotate "$@"
+            ;;
+        list|ls)
+            cmd_list "$@"
+            ;;
+        current|active)
+            cmd_current "$@"
+            ;;
+        process|build)
+            cmd_process "$@"
+            ;;
+        help|-h|--help)
+            show_help
+            ;;
+        version|-v|--version)
+            echo "themix v${VERSION}"
+            ;;
+        *)
+            echo "Unknown command: $command"
+            echo ""
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

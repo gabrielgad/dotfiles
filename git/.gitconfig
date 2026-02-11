@@ -1,0 +1,13 @@
+[user]
+	name = Gabe Ronnie C
+	email = Gabrielgad911@yahoo.com
+[init]
+	defaultBranch = main
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[credential "https://github.com"]
+	helper = 
+	helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !gh auth git-credential

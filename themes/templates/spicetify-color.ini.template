@@ -1,0 +1,39 @@
+; Spicetify color scheme - Themix themed
+; Theme: {{metadata.name}}
+; Place in ~/.config/spicetify/Themes/Themix/color.ini
+
+[Base]
+text               = {{text.primary_rgb}}
+subtext            = {{text.secondary_rgb}}
+sidebar-text       = {{text.primary_rgb}}
+main               = {{surface.primary_rgb}}
+sidebar            = {{surface.secondary_rgb}}
+player             = {{surface.primary_rgb}}
+card               = {{surface.secondary_rgb}}
+shadow             = {{surface.primary_rgb}}
+selected-row       = {{surface.tertiary_rgb}}
+button             = {{accent.primary_rgb}}
+button-active      = {{accent.secondary_rgb}}
+button-disabled    = {{text.tertiary_rgb}}
+tab-active         = {{accent.primary_rgb}}
+notification       = {{surface.tertiary_rgb}}
+notification-error = {{accent.tertiary_rgb}}
+misc               = {{border.subtle_rgb}}
+
+[Dark]
+text               = {{text.primary_rgb}}
+subtext            = {{text.secondary_rgb}}
+sidebar-text       = {{text.primary_rgb}}
+main               = {{surface.primary_rgb}}
+sidebar            = {{surface.secondary_rgb}}
+player             = {{surface.primary_rgb}}
+card               = {{surface.secondary_rgb}}
+shadow             = 000000
+selected-row       = {{surface.tertiary_rgb}}
+button             = {{accent.primary_rgb}}
+button-active      = {{accent.secondary_rgb}}
+button-disabled    = {{text.tertiary_rgb}}
+tab-active         = {{accent.primary_rgb}}
+notification       = {{surface.tertiary_rgb}}
+notification-error = {{accent.tertiary_rgb}}
+misc               = {{border.subtle_rgb}}

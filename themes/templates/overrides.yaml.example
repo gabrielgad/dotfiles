@@ -1,0 +1,50 @@
+# Theme Color Overrides
+# Copy this file to your theme directory as 'overrides.yaml'
+# Only specify values you want to override - everything else uses extracted colors
+#
+# Usage:
+#   cp ~/.config/themes/templates/overrides.yaml.example ~/.config/themes/<theme>/overrides.yaml
+#   nvim ~/.config/themes/<theme>/overrides.yaml
+#   nu ~/.config/themes/scripts/generate-theme.nu <theme>
+
+# Accent colors - inject colors not found in wallpaper
+accent:
+  primary: '#c8e967'      # Signature lime green
+  secondary: '#e20342'    # Signature magenta/red
+  tertiary: '#11AEB3'     # Signature cyan
+
+# Text colors - override extracted text colors
+# text:
+#   primary: '#ffffff'
+#   secondary: '#cccccc'
+
+# Surface/background colors
+# surface:
+#   primary: '#0a0a0a'
+#   secondary: '#1a1a1a'
+
+# Semantic colors - for UI states
+# semantic:
+#   active: '#2a3b3c'
+#   hover: '#3a4b4c'
+#   focus: '#c8e967'
+
+# Border colors
+# border:
+#   primary: '#e20342'
+#   accent: '#c8e967'
+
+# Terminal colors - ANSI color overrides
+# terminal:
+#   color1: '#ff5555'     # Red
+#   color2: '#50fa7b'     # Green
+#   color3: '#f1fa8c'     # Yellow
+#   color4: '#bd93f9'     # Blue
+#   color5: '#ff79c6'     # Magenta
+#   color6: '#8be9fd'     # Cyan
+
+# Custom colors - add your own for templates
+# custom:
+#   brand: '#1da1f2'
+#   warning: '#ffcc00'
+#   success: '#00ff00'
