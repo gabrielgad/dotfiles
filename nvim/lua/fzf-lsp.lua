@@ -26,49 +26,56 @@ local function jump_to_location(loc)
 end
 
 -- Helper function to format LSP locations for fzf
-local function format_lsp_item(item)
-  local filename = vim.fn.fnamemodify(item.filename or item.uri:gsub("file://", ""), ":~:.")
+local function format_lsp_item(item, compact)
+  local filename = item.filename or vim.uri_to_fname(item.uri)
   local line = item.lnum or item.range.start.line + 1
   local col = item.col or item.range.start.character + 1
   local text = item.text or ""
-  
+
   -- Clean up the text (remove leading whitespace, limit length)
   text = text:gsub("^%s+", ""):gsub("%s+", " ")
   if #text > 60 then
     text = text:sub(1, 57) .. "..."
   end
-  
+
+  if compact then
+    -- Show just the filename (no directories) for document symbols
+    local short = vim.fn.fnamemodify(filename, ":t")
+    return string.format("%s:%d:%d: %s", short, line, col, text)
+  end
+
   return string.format("%s:%d:%d: %s", filename, line, col, text)
 end
 
 -- Create fzf selection function
-local function create_fzf_handler(items, title)
+local function create_fzf_handler(items, title, compact)
   return function()
     if not items or #items == 0 then
       print("No " .. (title or "items") .. " found")
       return
     end
-    
+
     -- Format items for fzf
     local fzf_items = {}
-    for i, item in ipairs(items) do
-      table.insert(fzf_items, format_lsp_item(item))
+    for _, item in ipairs(items) do
+      table.insert(fzf_items, format_lsp_item(item, compact))
     end
-    
+
     -- Create temporary file with items
     local tmp_file = vim.fn.tempname()
     vim.fn.writefile(fzf_items, tmp_file)
-    
+
     -- Create floating window for fzf
     local width = math.floor(vim.o.columns * 0.9)
     local height = math.floor(vim.o.lines * 0.8)
     local row = math.floor((vim.o.lines - height) / 2)
     local col = math.floor((vim.o.columns - width) / 2)
-    
-    local buf = vim.api.nvim_create_buf(false, true)
+
+    local ok_buf, buf = pcall(vim.api.nvim_create_buf, false, true)
+    if not ok_buf then return end
     vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
-    
-    local win = vim.api.nvim_open_win(buf, true, {
+
+    local ok_win, win = pcall(vim.api.nvim_open_win, buf, true, {
       relative = 'editor',
       width = width,
       height = height,
@@ -79,84 +86,94 @@ local function create_fzf_handler(items, title)
       title = ' ' .. (title or "LSP Items") .. ' ',
       title_pos = 'center'
     })
-    
-    -- Disable line numbers for fzf
+    if not ok_win then return end
+
     vim.cmd('setlocal nonumber norelativenumber signcolumn=no')
-    
-    -- Create a temporary script to handle the selection
+
     local selection_file = vim.fn.tempname()
-    local fzf_cmd = string.format(
-      'fzf --ansi --prompt="%s> " --preview="echo {}" --preview-window=up:3:wrap --expect=ctrl-c,ctrl-g,ctrl-d,esc < %s > %s',
-      title or "Select",
-      tmp_file,
-      selection_file
-    )
-    
-    -- Add comprehensive escape key mappings for terminal mode
+    local preview_script = vim.fn.tempname()
+
+    -- Write preview script (bat shows full file, fzf handles scrolling via +{2}-/2)
+    if compact then
+      -- Document symbols: all items are in the same file
+      local full_path = items[1] and items[1].filename or ""
+      vim.fn.writefile({
+        '#!/bin/bash',
+        'line=$(echo "$1" | cut -d: -f2)',
+        string.format('bat --color=always --style=numbers --highlight-line="$line" "%s"', full_path),
+      }, preview_script)
+    else
+      -- References/definitions: file path is in the fzf line
+      vim.fn.writefile({
+        '#!/bin/bash',
+        'file=$(echo "$1" | cut -d: -f1)',
+        'file="${file/#\\~/$HOME}"',
+        'line=$(echo "$1" | cut -d: -f2)',
+        'bat --color=always --style=numbers --highlight-line="$line" "$file"',
+      }, preview_script)
+    end
+    vim.fn.setfperm(preview_script, 'rwxr-xr-x')
+
+    -- Write fzf launcher script (bash wrapper needed because vim.o.shell may be nushell)
+    local fzf_script = vim.fn.tempname()
+    vim.fn.writefile({
+      '#!/bin/bash',
+      string.format(
+        [[fzf --ansi --prompt="%s> " --delimiter=: --preview 'bash %s {}' --preview-window='right:60%%:+{2}-/2' --expect=ctrl-c,ctrl-g,ctrl-d,esc < "%s" > "%s"]],
+        title or "Select", preview_script, tmp_file, selection_file),
+    }, fzf_script)
+    vim.fn.setfperm(fzf_script, 'rwxr-xr-x')
+
+    local fzf_cmd = 'bash ' .. fzf_script
+
+    -- Escape key mappings for terminal mode
     vim.api.nvim_buf_set_keymap(buf, 't', '<Esc>', '<C-c>', { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(buf, 't', '<C-c>', '<C-c>', { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(buf, 't', '<C-d>', '<C-c>', { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(buf, 't', '<C-g>', '<C-c>', { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(buf, 't', 'q', '<C-c>', { noremap = true, silent = true })
 
-    -- Add normal mode escape mappings for when terminal loses focus
+    -- Normal mode escape mappings for when terminal loses focus
     vim.api.nvim_buf_set_keymap(buf, 'n', '<Esc>', '<cmd>close!<CR>', { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(buf, 'n', 'q', '<cmd>close!<CR>', { noremap = true, silent = true })
 
-    -- Auto-close when leaving terminal mode (entering normal mode)
-    vim.api.nvim_create_autocmd("TermLeave", {
-      buffer = buf,
-      callback = function()
-        if vim.api.nvim_win_is_valid(win) then
-          vim.api.nvim_win_close(win, true)
-        end
-      end,
-      once = true
-    })
-
     -- Start fzf
-    vim.fn.termopen(fzf_cmd, {
+    local ok_term, _ = pcall(vim.fn.termopen, fzf_cmd, {
       on_exit = function(_, exit_code)
-        -- Clean up temp file
         vim.fn.delete(tmp_file)
-        
+        vim.fn.delete(preview_script)
+        vim.fn.delete(fzf_script)
+
         if vim.api.nvim_win_is_valid(win) then
           vim.api.nvim_win_close(win, true)
         end
-        
+
         if exit_code ~= 0 then
           vim.fn.delete(selection_file)
-          return -- User cancelled
+          return
         end
-        
-        -- Read the selection from file
+
         if vim.fn.filereadable(selection_file) == 1 then
           local selected_lines = vim.fn.readfile(selection_file)
           if #selected_lines > 0 then
-            -- Handle --expect output: first line is the key pressed, second line is the selection
             local key_pressed = selected_lines[1]
             local selected_line = selected_lines[2] or selected_lines[1]
 
-            -- If an escape key was pressed, don't process the selection
             if key_pressed == "ctrl-c" or key_pressed == "ctrl-g" or key_pressed == "ctrl-d" or key_pressed == "esc" then
               return
             end
 
-            -- If we have a valid selection, process it
             if selected_line and selected_line ~= "" then
-              -- Parse the selection to find the corresponding item
               for i, formatted in ipairs(fzf_items) do
                 if formatted == selected_line then
                   local item = items[i]
-                  -- Jump to the selected location
-                  local filename = item.filename or item.uri:gsub("file://", "")
-                  local line = item.lnum or item.range.start.line + 1
-                  local col = item.col or item.range.start.character + 1
+                  local filename = item.filename or vim.uri_to_fname(item.uri)
+                  local lnum = item.lnum or item.range.start.line + 1
+                  local col_num = item.col or item.range.start.character + 1
 
-                  -- Schedule the jump for after the terminal window closes
                   vim.schedule(function()
                     vim.cmd('edit ' .. vim.fn.fnameescape(filename))
-                    vim.api.nvim_win_set_cursor(0, {line, col - 1})
+                    vim.api.nvim_win_set_cursor(0, {lnum, col_num - 1})
                     vim.cmd('normal! zz')
                   end)
                   break
@@ -165,11 +182,17 @@ local function create_fzf_handler(items, title)
             end
           end
         end
-        
+
         vim.fn.delete(selection_file)
       end
     })
-    
+    if not ok_term then
+      if vim.api.nvim_win_is_valid(win) then
+        vim.api.nvim_win_close(win, true)
+      end
+      return
+    end
+
     vim.cmd('startinsert')
   end
 end
@@ -358,7 +381,7 @@ function M.document_symbols()
     end
     
     process_symbols(result)
-    create_fzf_handler(items, "Document Symbols")()
+    create_fzf_handler(items, "Document Symbols", true)()
   end)
 end
 

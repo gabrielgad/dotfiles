@@ -213,12 +213,13 @@ function M.setup_lsp(bufnr)
   end, vim.tbl_extend('force', opts, { desc = 'Jump to build errors or run build check' }))
   
   
-  -- Document symbols
-  map('n', '<leader>s', fzf_lsp.document_symbols, vim.tbl_extend('force', opts, { desc = 'Document symbols (fzf)' }))
 end
 
 -- Tool/utility keybinds
 function M.setup_tools()
+  -- Document symbols
+  map('n', '<leader>s', function() require('fzf-lsp').document_symbols() end, { desc = 'Document symbols (fzf)' })
+
   -- Keybind viewer (integrating existing functionality)
   map('n', '<leader>?', function() require('keybinds').toggle() end, { desc = 'Toggle keybind viewer' })
   map('n', '<leader>k', function() require('keybinds').toggle() end, { desc = 'Toggle keybind viewer' })

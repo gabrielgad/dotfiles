@@ -79,6 +79,7 @@ require('oil').setup({
     },
     ["<C-h>"] = false,
     ["<C-l>"] = false,
+    ["<C-r>"] = "actions.refresh",
   },
 })
 -- Hide misleading directory sizes in oil
