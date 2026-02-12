@@ -3,11 +3,12 @@ local M = {}
 
 -- LSP setup function
 function M.setup()
-  vim.lsp.set_log_level("warn")
-  
+  -- Enable LSP logging for debugging
+  vim.lsp.set_log_level("info")
+
   -- Enable basic completion
   vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
-  
+
   -- LSP key mappings
   local function on_attach(client, bufnr)
     -- Use centralized LSP keybinds
@@ -16,7 +17,7 @@ function M.setup()
 
   -- Enhanced capabilities for autocompletion
   local capabilities = vim.lsp.protocol.make_client_capabilities()
-  
+
   -- LSP configurations (only start when needed)
   local lsp_configs = {
     go = {
@@ -80,6 +81,22 @@ function M.setup()
       filetypes = {'cs'},
       root_patterns = {'*.sln', '*.csproj', '.git'},
     },
+    lua = {
+      name = 'lua_ls',
+      cmd = {'lua-language-server'},
+      filetypes = {'lua'},
+      root_patterns = {'.luarc.json', '.luarc.jsonc', '.luacheckrc', '.stylua.toml', 'stylua.toml', '.git'},
+      settings = {
+        Lua = {
+          runtime = { version = 'LuaJIT' },
+          workspace = {
+            checkThirdParty = false,
+            library = { vim.env.VIMRUNTIME },
+          },
+          telemetry = { enable = false },
+        },
+      },
+    },
     html = {
       name = 'html-lsp',
       cmd = {'vscode-html-language-server', '--stdio'},
@@ -98,7 +115,7 @@ function M.setup()
       },
     },
   }
-  
+
   -- Function to start LSP for specific filetype
   local function start_lsp_for_filetype(filetype)
     -- Find matching config
@@ -112,18 +129,41 @@ function M.setup()
       end
       if config then break end
     end
-    
+
     if not config then return end
 
-    -- Find root directory
-    local found = vim.fs.find(config.root_patterns, { upward = true })[1]
-    if not found then return end
-    local root_dir = vim.fs.dirname(found)
+    -- On Windows, npm-installed servers are POSIX shell scripts that native nvim can't spawn.
+    -- Always prefer the .cmd wrapper if it exists.
+    local cmd = vim.deepcopy(config.cmd)
+    if vim.fn.has('win32') == 1 and vim.fn.executable(cmd[1] .. '.cmd') == 1 then
+      cmd[1] = cmd[1] .. '.cmd'
+    end
+
+    -- Check if the LSP binary exists
+    if vim.fn.executable(cmd[1]) ~= 1 then
+      return
+    end
+
+    -- Find root directory using a function matcher to support glob patterns
+    local found = vim.fs.find(function(name)
+      for _, pattern in ipairs(config.root_patterns) do
+        if pattern:find('%*') then
+          -- Glob pattern: convert to Lua pattern
+          local lua_pattern = '^' .. pattern:gsub('%.', '%%.'):gsub('%*', '.*') .. '$'
+          if name:match(lua_pattern) then return true end
+        else
+          if name == pattern then return true end
+        end
+      end
+      return false
+    end, { upward = true })
+
+    local root_dir = found[1] and vim.fs.dirname(found[1]) or vim.fn.getcwd()
 
     -- Start LSP
     vim.lsp.start({
       name = config.name,
-      cmd = config.cmd,
+      cmd = cmd,
       filetypes = config.filetypes,
       root_dir = root_dir,
       on_attach = on_attach,
@@ -131,7 +171,7 @@ function M.setup()
       settings = config.settings or {},
     })
   end
-  
+
   -- Auto-start LSP when opening files
   vim.api.nvim_create_autocmd('FileType', {
     callback = function(args)

@@ -9,27 +9,32 @@ vim.cmd('filetype plugin indent on')
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Set shell to nushell if available, otherwise use system default
-if vim.fn.executable('nu') == 1 then
-  vim.o.shell = 'nu'
+-- Set correct shell (use bash for terminal/fzf operations)
+local bash_path = vim.fn.exepath('bash')
+if bash_path ~= '' then
+  vim.o.shell = bash_path
+else
+  vim.o.shell = 'bash'
+end
+vim.o.shellcmdflag = '-c'
+if vim.fn.has('win32') == 1 then
+  vim.o.shellquote = ''
+  vim.o.shellxquote = ''
 end
 
 -- Clipboard integration
-vim.opt.clipboard = 'unnamedplus'  -- Use system clipboard for all operations
+vim.opt.clipboard = 'unnamedplus'
 
 -- Line numbers configuration
 vim.opt.number = true
 vim.opt.relativenumber = true
 
 -- Buffer settings
-vim.opt.hidden = true  -- Allow switching buffers without saving
+vim.opt.hidden = true
 
--- Load the colorscheme (pcall so fresh installs without themix don't error)
-local ok, theme = pcall(require, 'golden-lion')
-if ok then
-  theme.setup()
-  vim.cmd('colorscheme golden-lion')
-end
+-- Split direction
+vim.opt.splitright = true
+vim.opt.splitbelow = true
 
 -- Terminal integration
 require('terminal').setup()
@@ -52,69 +57,44 @@ require('lsp').setup()
 -- Treesitter configuration
 require('treesitter').setup()
 
+-- Claude Code integration
+require('claudecode-config').setup()
+
 -- Build error integration
 require('build-errors').setup()
 
--- Claude Code integration
-require('claudecode').setup({
-  terminal = {
-    provider = "native",
-  },
-})
-
 -- Oil file explorer
-require('oil').setup({
-  columns = {
-    "icon",
-    "size",
-    "mtime",
-  },
-  view_options = {
-    show_hidden = true,
-  },
-  keymaps = {
-    ["<C-p>"] = {
-      "actions.preview",
-      opts = { split = "belowright" },
-    },
-    ["<C-h>"] = false,
-    ["<C-l>"] = false,
-    ["<C-r>"] = "actions.refresh",
-  },
-})
--- Hide misleading directory sizes in oil
-local files_adapter = require('oil.adapters.files')
-local orig_get_column = files_adapter.get_column
-files_adapter.get_column = function(name)
-  local col = orig_get_column(name)
-  if name == "size" and col then
-    local orig_render = col.render
-    col.render = function(entry, conf)
-      if entry[require('oil.constants').FIELD_TYPE] == "directory" then
-        return ""
-      end
-      return orig_render(entry, conf)
-    end
-  end
-  return col
-end
-vim.keymap.set('n', '-', '<cmd>Oil<CR>', { desc = 'Open parent directory (Oil)' })
+require('oil-config').setup()
 
 -- Disable unused providers and features to reduce startup time
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
-vim.g.loaded_node_provider = 0  -- We installed it but don't need it for basic usage
-vim.g.loaded_python3_provider = 0  -- Disable if not using Python plugins
+vim.g.loaded_python3_provider = 0
 
--- Write cwd to temp file on exit (used by shell wrapper to cd after nvim)
-vim.api.nvim_create_autocmd('VimLeavePre', {
-  callback = function()
-    local cwd_file = vim.env.NVIM_CWD_FILE
-    if cwd_file then
-      vim.fn.writefile({vim.fn.getcwd()}, cwd_file)
-    end
-  end,
-})
+-- Performance optimizations
+vim.opt.shadafile = "NONE"
+vim.opt.swapfile = false
 
 -- File change detection
-vim.opt.autoread = true  -- Automatically reload files changed outside vim
+vim.opt.autoread = true
+
+-- Search settings
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+-- Write cwd to temp file on exit (for shell wrapper to pick up)
+vim.api.nvim_create_autocmd('VimLeave', {
+  callback = function()
+    local cwd_file = vim.fn.expand('$TEMP/nvim-cwd.txt')
+    if not cwd_file or cwd_file == '' then
+      cwd_file = vim.env.NVIM_CWD_FILE
+    end
+    if cwd_file and cwd_file ~= '' then
+      local f = io.open(cwd_file, 'w')
+      if f then
+        f:write(vim.fn.getcwd())
+        f:close()
+      end
+    end
+  end
+})

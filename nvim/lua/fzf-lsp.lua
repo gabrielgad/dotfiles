@@ -1,6 +1,11 @@
 -- FZF integration for LSP functionality
 local M = {}
 
+-- Normalize paths for bash (backslashes → forward slashes)
+local function bp(path)
+  return path:gsub('\\', '/')
+end
+
 -- Retry-aware LSP request wrapper (handles ContentModified)
 local function lsp_request(method, params, callback, retries)
   retries = retries or 3
@@ -91,58 +96,42 @@ local function create_fzf_handler(items, title, compact)
     vim.cmd('setlocal nonumber norelativenumber signcolumn=no')
 
     local selection_file = vim.fn.tempname()
-    local preview_script = vim.fn.tempname()
 
-    -- Write preview script (bat shows full file, fzf handles scrolling via +{2}-/2)
+    -- Build preview command inline (no bash scripts needed)
+    local preview_cmd
     if compact then
-      -- Document symbols: all items are in the same file
+      -- Document symbols: all in same file, use full path directly
       local full_path = items[1] and items[1].filename or ""
-      vim.fn.writefile({
-        '#!/bin/bash',
-        'line=$(echo "$1" | cut -d: -f2)',
-        string.format('bat --color=always --style=numbers --highlight-line="$line" "%s"', full_path),
-      }, preview_script)
+      preview_cmd = string.format(
+        [[bat --color=always --style=numbers --highlight-line {2} '%s']],
+        bp(full_path))
     else
-      -- References/definitions: file path is in the fzf line
-      vim.fn.writefile({
-        '#!/bin/bash',
-        'file=$(echo "$1" | cut -d: -f1)',
-        'file="${file/#\\~/$HOME}"',
-        'line=$(echo "$1" | cut -d: -f2)',
-        'bat --color=always --style=numbers --highlight-line="$line" "$file"',
-      }, preview_script)
+      -- References/definitions: {1} is filename, {2} is line number
+      preview_cmd = [[bat --color=always --style=numbers --highlight-line {2} {1}]]
     end
-    vim.fn.setfperm(preview_script, 'rwxr-xr-x')
 
-    -- Write fzf launcher script (bash wrapper needed because vim.o.shell may be nushell)
-    local fzf_script = vim.fn.tempname()
-    vim.fn.writefile({
-      '#!/bin/bash',
-      string.format(
-        [[fzf --ansi --prompt="%s> " --delimiter=: --preview 'bash %s {}' --preview-window='right:60%%:+{2}-/2' --expect=ctrl-c,ctrl-g,ctrl-d,esc < "%s" > "%s"]],
-        title or "Select", preview_script, tmp_file, selection_file),
-    }, fzf_script)
-    vim.fn.setfperm(fzf_script, 'rwxr-xr-x')
+    -- Build fzf command as a string (no script files)
+    -- SHELL=nu makes fzf use nushell for preview (faster than MSYS2 bash)
+    local fzf_cmd = string.format(
+      [[SHELL=nu fzf --ansi --prompt="%s> " --delimiter=: --preview '%s' --preview-window='right:60%%:+{2}-/2' --layout=reverse --expect=ctrl-c,ctrl-g,ctrl-d --bind 'ctrl-/:toggle-preview' < '%s' > '%s']],
+      title or "Select", preview_cmd, bp(tmp_file), bp(selection_file))
 
-    local fzf_cmd = 'bash ' .. fzf_script
-
-    -- Escape key mappings for terminal mode
-    vim.api.nvim_buf_set_keymap(buf, 't', '<Esc>', '<C-c>', { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(buf, 't', '<C-c>', '<C-c>', { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(buf, 't', '<C-d>', '<C-c>', { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(buf, 't', '<C-g>', '<C-c>', { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(buf, 't', 'q', '<C-c>', { noremap = true, silent = true })
-
-    -- Normal mode escape mappings for when terminal loses focus
+    -- Normal mode close
     vim.api.nvim_buf_set_keymap(buf, 'n', '<Esc>', '<cmd>close!<CR>', { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(buf, 'n', 'q', '<cmd>close!<CR>', { noremap = true, silent = true })
 
-    -- Start fzf
-    local ok_term, _ = pcall(vim.fn.termopen, fzf_cmd, {
+    -- Override global terminal-mode window-nav mappings so they pass through to fzf
+    vim.api.nvim_buf_set_keymap(buf, 't', '<C-j>', '<C-j>', { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(buf, 't', '<C-k>', '<C-k>', { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(buf, 't', '<C-h>', '<C-h>', { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(buf, 't', '<C-l>', '<C-l>', { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(buf, 't', '<C-n>', '<C-n>', { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(buf, 't', '<C-p>', '<C-p>', { noremap = true, silent = true })
+
+    -- Start fzf (use vim.o.shell to avoid WSL bash)
+    local ok_term, _ = pcall(vim.fn.termopen, {vim.o.shell, '-c', fzf_cmd}, {
       on_exit = function(_, exit_code)
         vim.fn.delete(tmp_file)
-        vim.fn.delete(preview_script)
-        vim.fn.delete(fzf_script)
 
         if vim.api.nvim_win_is_valid(win) then
           vim.api.nvim_win_close(win, true)
@@ -251,18 +240,18 @@ function M.definitions()
       print("LSP definition error: " .. (err.message or tostring(err)))
       return
     end
-    
+
     if not result or #result == 0 then
       print("No definitions found")
       return
     end
-    
+
     -- Handle single definition
     if #result == 1 then
       local location = result[1]
       local uri = location.uri or location.targetUri
       local range = location.range or location.targetRange
-      
+
       -- Open the file and jump to location
       local filename = vim.uri_to_fname(uri)
       vim.cmd('edit ' .. vim.fn.fnameescape(filename))
@@ -272,28 +261,28 @@ function M.definitions()
       vim.cmd('normal! zz')
       return
     end
-    
+
     -- Multiple definitions - use fzf
     local items = {}
     for _, def in ipairs(result) do
       local filename = vim.uri_to_fname(def.uri)
       local bufnr = vim.fn.bufnr(filename)
       local text = ""
-      
+
       if bufnr ~= -1 then
         local lines = vim.api.nvim_buf_get_lines(bufnr, def.range.start.line, def.range.start.line + 1, false)
         if lines and lines[1] then
           text = lines[1]
         end
       end
-      
+
       table.insert(items, {
         filename = filename,
         range = def.range,
         text = text
       })
     end
-    
+
     create_fzf_handler(items, "Definitions")()
   end)
 end
@@ -346,40 +335,40 @@ end
 function M.document_symbols()
   local params = vim.lsp.util.make_position_params(0, 'utf-8')
   params.textDocument = vim.lsp.util.make_text_document_params(0, 'utf-8')
-  
+
   lsp_request('textDocument/documentSymbol', params, function(err, result)
     if err then
       print("LSP symbols error: " .. (err.message or tostring(err)))
       return
     end
-    
+
     if not result or #result == 0 then
       print("No symbols found")
       return
     end
-    
+
     local items = {}
     local function process_symbols(symbols, prefix)
       prefix = prefix or ""
-      
+
       for _, symbol in ipairs(symbols) do
         local name = prefix .. symbol.name
         local kind = vim.lsp.protocol.SymbolKind[symbol.kind] or "Unknown"
         local range = symbol.selectionRange or symbol.range
-        
+
         table.insert(items, {
           filename = vim.api.nvim_buf_get_name(0),
           range = range,
           text = string.format("[%s] %s", kind, name)
         })
-        
+
         -- Process nested symbols
         if symbol.children then
           process_symbols(symbol.children, name .. ".")
         end
       end
     end
-    
+
     process_symbols(result)
     create_fzf_handler(items, "Document Symbols", true)()
   end)
