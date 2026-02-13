@@ -1,9 +1,18 @@
 -- FZF integration for LSP functionality
 local M = {}
 
--- Normalize paths for bash (backslashes → forward slashes)
-local function bp(path)
-  return path:gsub('\\', '/')
+local is_windows = vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
+
+-- Cross-platform path normalization (always forward slashes)
+local function normalize(path)
+  local p = path:gsub('\\', '/')
+  if is_windows then
+    -- Convert MSYS /c/Users/... to C:/Users/...
+    p = p:gsub("^/(%a)/", function(d) return d:upper() .. ":/" end)
+    -- Ensure drive letter is uppercase for consistent comparison
+    p = p:gsub("^(%a):", function(d) return d:upper() .. ":" end)
+  end
+  return p
 end
 
 -- Retry-aware LSP request wrapper (handles ContentModified)
@@ -25,31 +34,56 @@ local function jump_to_location(loc)
   local uri = loc.uri or loc.targetUri
   local range = loc.range or loc.targetRange
   local filename = vim.uri_to_fname(uri)
-  vim.cmd('edit ' .. vim.fn.fnameescape(filename))
+  vim.cmd('drop ' .. vim.fn.fnameescape(filename))
   vim.api.nvim_win_set_cursor(0, {range.start.line + 1, range.start.character})
   vim.cmd('normal! zz')
 end
 
--- Helper function to format LSP locations for fzf
-local function format_lsp_item(item, compact)
+-- Compute project root (git root or cwd)
+local function get_project_root()
+  local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+  if git_root and not git_root:match("^fatal") then
+    return normalize(git_root):gsub("/$", "")
+  end
+  return normalize(vim.fn.getcwd()):gsub("/$", "")
+end
+
+-- Make path relative to project root
+local function relative_to_root(filepath, root)
+  local abs = normalize(vim.fn.fnamemodify(filepath, ":p"))
+  local prefix = root .. "/"
+  if is_windows then
+    -- Case-insensitive comparison on Windows
+    if abs:lower():sub(1, #prefix) == prefix:lower() then
+      return abs:sub(#prefix + 1)
+    end
+  else
+    if abs:sub(1, #prefix) == prefix then
+      return abs:sub(#prefix + 1)
+    end
+  end
+  return vim.fn.fnamemodify(filepath, ":t")
+end
+
+-- Format a single LSP item for fzf
+-- Output: full_path<TAB>line<TAB>display_string
+local function format_lsp_item(item, compact, root)
   local filename = item.filename or vim.uri_to_fname(item.uri)
   local line = item.lnum or item.range.start.line + 1
   local col = item.col or item.range.start.character + 1
   local text = item.text or ""
 
-  -- Clean up the text (remove leading whitespace, limit length)
   text = text:gsub("^%s+", ""):gsub("%s+", " ")
   if #text > 60 then
     text = text:sub(1, 57) .. "..."
   end
 
-  if compact then
-    -- Show just the filename (no directories) for document symbols
-    local short = vim.fn.fnamemodify(filename, ":t")
-    return string.format("%s:%d:%d: %s", short, line, col, text)
-  end
-
-  return string.format("%s:%d:%d: %s", filename, line, col, text)
+  local full = normalize(filename)
+  local display = compact and vim.fn.fnamemodify(filename, ":t") or relative_to_root(filename, root)
+  local label = text ~= ""
+    and string.format("%s:%d:%d: %s", display, line, col, text)
+    or string.format("%s:%d:%d", display, line, col)
+  return string.format("%s\t%d\t%s", full, line, label)
 end
 
 -- Create fzf selection function
@@ -60,10 +94,11 @@ local function create_fzf_handler(items, title, compact)
       return
     end
 
-    -- Format items for fzf
+    -- Format items for fzf (compute root once for all items)
+    local root = get_project_root()
     local fzf_items = {}
     for _, item in ipairs(items) do
-      table.insert(fzf_items, format_lsp_item(item, compact))
+      table.insert(fzf_items, format_lsp_item(item, compact, root))
     end
 
     -- Create temporary file with items
@@ -97,24 +132,23 @@ local function create_fzf_handler(items, title, compact)
 
     local selection_file = vim.fn.tempname()
 
-    -- Build preview command inline (no bash scripts needed)
+    -- Tab-delimited fields: {1}=full_path {2}=line {3}=col {4}=text {5}=display_path
     local preview_cmd
     if compact then
-      -- Document symbols: all in same file, use full path directly
       local full_path = items[1] and items[1].filename or ""
       preview_cmd = string.format(
         [[bat --color=always --style=numbers --highlight-line {2} '%s']],
-        bp(full_path))
+        normalize(full_path))
     else
-      -- References/definitions: {1} is filename, {2} is line number
+      -- {1} is the full path (hidden from display), {2} is line number
       preview_cmd = [[bat --color=always --style=numbers --highlight-line {2} {1}]]
     end
 
-    -- Build fzf command as a string (no script files)
-    -- SHELL=nu makes fzf use nushell for preview (faster than MSYS2 bash)
+    -- --with-nth=3 shows only the formatted display string (hides {1}=path {2}=line)
+    local nu_path = normalize(vim.fn.exepath('nu'))
     local fzf_cmd = string.format(
-      [[SHELL=nu fzf --ansi --prompt="%s> " --delimiter=: --preview '%s' --preview-window='right:60%%:+{2}-/2' --layout=reverse --expect=ctrl-c,ctrl-g,ctrl-d --bind 'ctrl-/:toggle-preview' < '%s' > '%s']],
-      title or "Select", preview_cmd, bp(tmp_file), bp(selection_file))
+      [[SHELL=%s fzf --ansi --prompt="%s> " --delimiter='\t' --with-nth=3 --preview '%s' --preview-window='right:60%%:+{2}-/2' --layout=reverse --expect=ctrl-c,ctrl-g,ctrl-d --bind 'ctrl-/:toggle-preview' < '%s' > '%s']],
+      nu_path, title or "Select", preview_cmd, normalize(tmp_file), normalize(selection_file))
 
     -- Normal mode close
     vim.api.nvim_buf_set_keymap(buf, 'n', '<Esc>', '<cmd>close!<CR>', { noremap = true, silent = true })
@@ -161,7 +195,7 @@ local function create_fzf_handler(items, title, compact)
                   local col_num = item.col or item.range.start.character + 1
 
                   vim.schedule(function()
-                    vim.cmd('edit ' .. vim.fn.fnameescape(filename))
+                    vim.cmd('drop ' .. vim.fn.fnameescape(filename))
                     vim.api.nvim_win_set_cursor(0, {lnum, col_num - 1})
                     vim.cmd('normal! zz')
                   end)
@@ -254,7 +288,7 @@ function M.definitions()
 
       -- Open the file and jump to location
       local filename = vim.uri_to_fname(uri)
-      vim.cmd('edit ' .. vim.fn.fnameescape(filename))
+      vim.cmd('drop ' .. vim.fn.fnameescape(filename))
       local line = range.start.line + 1
       local col = range.start.character
       vim.api.nvim_win_set_cursor(0, {line, col})

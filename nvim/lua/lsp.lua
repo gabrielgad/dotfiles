@@ -5,10 +5,10 @@ local M = {}
 function M.setup()
   -- Enable LSP logging for debugging
   vim.lsp.set_log_level("info")
-
+  
   -- Enable basic completion
   vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
-
+  
   -- LSP key mappings
   local function on_attach(client, bufnr)
     -- Use centralized LSP keybinds
@@ -17,7 +17,7 @@ function M.setup()
 
   -- Enhanced capabilities for autocompletion
   local capabilities = vim.lsp.protocol.make_client_capabilities()
-
+  
   -- LSP configurations (only start when needed)
   local lsp_configs = {
     go = {
@@ -115,7 +115,7 @@ function M.setup()
       },
     },
   }
-
+  
   -- Function to start LSP for specific filetype
   local function start_lsp_for_filetype(filetype)
     -- Find matching config
@@ -171,7 +171,7 @@ function M.setup()
       settings = config.settings or {},
     })
   end
-
+  
   -- Auto-start LSP when opening files
   vim.api.nvim_create_autocmd('FileType', {
     callback = function(args)

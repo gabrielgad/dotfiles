@@ -15,10 +15,13 @@ function M.setup_general()
   -- Disable unwanted default keybinds
   map('n', 'q', '<nop>', { desc = 'Disabled macro recording' })
   map('n', 'Q', '<nop>', { desc = 'Disabled Ex mode' })
+  
+  -- Redo (symmetric with u for undo)
+  map('n', 'U', '<C-r>', { desc = 'Redo' })
 
   -- Exit insert mode with jk
   map('i', 'jk', '<Esc>', { desc = 'Exit insert mode' })
-
+  
   -- Clipboard operations
   map('n', '<leader>ya', 'ggVG"+y<C-o>', { desc = 'Yank entire file to clipboard' })
 
@@ -45,6 +48,10 @@ function M.setup_general()
       print('No modified buffers to save')
     end
   end, { desc = 'Save all files' })
+
+  -- Find and replace (LSP rename overrides normal mode in LSP buffers)
+  map('n', '<leader>rn', [[:%s/\<<C-r><C-w>\>//g<Left><Left>]], { desc = 'Replace word under cursor' })
+  map('v', '<leader>rn', [["zy:%s/<C-r>z//g<Left><Left>]], { desc = 'Replace selection' })
 
   -- Clear search highlighting
   map('n', '<leader>/', ':noh<CR>', { desc = 'Clear search highlight' })
@@ -154,13 +161,13 @@ function M.setup_windows()
   map('n', '<leader>sh', ':split<CR>', { desc = 'Split window horizontally' })
   map('n', '<leader>sc', ':close<CR>', { desc = 'Close current window' })
   map('n', '<leader>so', ':only<CR>', { desc = 'Close all other windows' })
-
+  
   -- Window navigation (using Ctrl + hjkl)
   map('n', '<C-h>', '<C-w>h', { desc = 'Move to left window' })
   map('n', '<C-j>', '<C-w>j', { desc = 'Move to bottom window' })
   map('n', '<C-k>', '<C-w>k', { desc = 'Move to top window' })
   map('n', '<C-l>', '<C-w>l', { desc = 'Move to right window' })
-
+  
   -- Window resizing
   map('n', '<leader>+', ':resize +5<CR>', { desc = 'Increase window height' })
   map('n', '<leader>-', ':resize -5<CR>', { desc = 'Decrease window height' })
@@ -195,7 +202,7 @@ end
 function M.setup_lsp(bufnr)
   local opts = { buffer = bufnr, silent = true }
   local fzf_lsp = require('fzf-lsp')
-
+  
   -- Navigation
   map('n', 'gd', fzf_lsp.definitions, vim.tbl_extend('force', opts, { desc = 'Go to definition (fzf)' }))
   map('n', 'gD', vim.lsp.buf.declaration, vim.tbl_extend('force', opts, { desc = 'Go to declaration' }))
@@ -203,14 +210,14 @@ function M.setup_lsp(bufnr)
   map('n', 'gi', fzf_lsp.implementations, vim.tbl_extend('force', opts, { desc = 'Go to implementation (fzf)' }))
   map('n', 'K', vim.lsp.buf.hover, vim.tbl_extend('force', opts, { desc = 'Hover documentation' }))
   map('n', '<C-k>', vim.lsp.buf.signature_help, vim.tbl_extend('force', opts, { desc = 'Signature help' }))
-
+  
   -- Actions
   map('n', '<leader>rn', vim.lsp.buf.rename, vim.tbl_extend('force', opts, { desc = 'Rename symbol' }))
   map('n', '<leader>ca', vim.lsp.buf.code_action, vim.tbl_extend('force', opts, { desc = 'Code action' }))
   map('n', '<leader>f', function()
     vim.lsp.buf.format({ async = true })
   end, vim.tbl_extend('force', opts, { desc = 'Format code' }))
-
+  
   -- Diagnostics (also set globally in setup_general for non-LSP buffers)
   map('n', '[d', vim.diagnostic.goto_prev, vim.tbl_extend('force', opts, { desc = 'Previous diagnostic' }))
   map('n', ']d', vim.diagnostic.goto_next, vim.tbl_extend('force', opts, { desc = 'Next diagnostic' }))
@@ -255,8 +262,8 @@ function M.setup_lsp(bufnr)
       vim.cmd('BuildCheck')
     end
   end, vim.tbl_extend('force', opts, { desc = 'Jump to build errors or run build check' }))
-
-
+  
+  
   -- Document symbols
   map('n', '<leader>s', fzf_lsp.document_symbols, vim.tbl_extend('force', opts, { desc = 'Document symbols (fzf)' }))
 end

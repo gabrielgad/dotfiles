@@ -1,4 +1,4 @@
--- Minimal Neovim configuration
+-- Minimal Neovim configuration with breath-darker colorscheme
 vim.o.termguicolors = true
 
 -- Enable syntax highlighting (defer some operations)
@@ -9,7 +9,8 @@ vim.cmd('filetype plugin indent on')
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Set correct shell (use bash for terminal/fzf operations)
+-- Set correct shell (use bash for terminal/yazi operations)
+-- Use vim.fn.exepath to resolve the actual path, works on both Unix and Windows/MSYS
 local bash_path = vim.fn.exepath('bash')
 if bash_path ~= '' then
   vim.o.shell = bash_path
@@ -23,18 +24,23 @@ if vim.fn.has('win32') == 1 then
 end
 
 -- Clipboard integration
-vim.opt.clipboard = 'unnamedplus'
+vim.opt.clipboard = 'unnamedplus'  -- Use system clipboard for all operations
 
 -- Line numbers configuration
 vim.opt.number = true
 vim.opt.relativenumber = true
 
 -- Buffer settings
-vim.opt.hidden = true
+vim.opt.hidden = true  -- Allow switching buffers without saving
 
 -- Split direction
 vim.opt.splitright = true
 vim.opt.splitbelow = true
+
+-- Load the colorscheme
+require("breath-darker").setup()
+vim.cmd("colorscheme breath-darker")
+
 
 -- Terminal integration
 require('terminal').setup()
@@ -54,6 +60,7 @@ require('bufferline').setup()
 -- LSP configuration
 require('lsp').setup()
 
+
 -- Treesitter configuration
 require('treesitter').setup()
 
@@ -69,32 +76,28 @@ require('oil-config').setup()
 -- Disable unused providers and features to reduce startup time
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
-vim.g.loaded_python3_provider = 0
+-- vim.g.loaded_node_provider = 0  -- Re-enabled for Copilot
+vim.g.loaded_python3_provider = 0  -- Disable if not using Python plugins
 
--- Performance optimizations
-vim.opt.shadafile = "NONE"
-vim.opt.swapfile = false
+-- WSL2 performance optimizations
+vim.opt.shadafile = "NONE"  -- Disable ShaDa to reduce WSL2 I/O overhead
+vim.opt.swapfile = false  -- Disable swap files to prevent LSP rename conflicts
 
 -- File change detection
-vim.opt.autoread = true
+vim.opt.autoread = true  -- Automatically reload files changed outside vim
 
 -- Search settings
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
+vim.opt.ignorecase = true  -- Case-insensitive search
+vim.opt.smartcase = true   -- Unless you use uppercase
 
 -- Write cwd to temp file on exit (for shell wrapper to pick up)
 vim.api.nvim_create_autocmd('VimLeave', {
   callback = function()
     local cwd_file = vim.fn.expand('$TEMP/nvim-cwd.txt')
-    if not cwd_file or cwd_file == '' then
-      cwd_file = vim.env.NVIM_CWD_FILE
-    end
-    if cwd_file and cwd_file ~= '' then
-      local f = io.open(cwd_file, 'w')
-      if f then
-        f:write(vim.fn.getcwd())
-        f:close()
-      end
+    local f = io.open(cwd_file, 'w')
+    if f then
+      f:write(vim.fn.getcwd())
+      f:close()
     end
   end
 })

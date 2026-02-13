@@ -3,12 +3,27 @@ local M = {}
 
 function M.setup()
   require("claudecode").setup({
-    terminal_cmd = "claude",
+    terminal_cmd = "codeutil",
     log_level = "info",
     terminal = {
-      split_side = "right",
-      split_width_percentage = 0.4,
-      provider = "native",
+      provider = "external",
+      provider_opts = {
+        external_terminal_cmd = function(cmd_string, env_table)
+          -- Write a temp nushell script with cd, env vars, and command
+          local cwd = vim.fn.getcwd()
+          local script_path = vim.fn.expand("$TEMP/claude-launch.nu")
+          local f = io.open(script_path, "w")
+          if f then
+            f:write(string.format("cd '%s'\n", cwd))
+            for k, v in pairs(env_table or {}) do
+              f:write(string.format("$env.%s = '%s'\n", k, v))
+            end
+            f:write(cmd_string .. "\n")
+            f:close()
+          end
+          return { "nu", "-c", string.format("^wt -w 0 nt nu %s", script_path) }
+        end,
+      },
     },
     diff_opts = {
       layout = "vertical",
