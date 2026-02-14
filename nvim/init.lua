@@ -1,4 +1,4 @@
--- Minimal Neovim configuration with breath-darker colorscheme
+-- Minimal Neovim configuration
 vim.o.termguicolors = true
 
 -- Enable syntax highlighting (defer some operations)
@@ -36,11 +36,6 @@ vim.opt.hidden = true  -- Allow switching buffers without saving
 -- Split direction
 vim.opt.splitright = true
 vim.opt.splitbelow = true
-
--- Load the colorscheme
-require("breath-darker").setup()
-vim.cmd("colorscheme breath-darker")
-
 
 -- Terminal integration
 require('terminal').setup()

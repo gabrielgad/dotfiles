@@ -2,14 +2,13 @@
 local M = {}
 
 function M.setup()
-  require("claudecode").setup({
-    terminal_cmd = "codeutil",
-    log_level = "info",
-    terminal = {
+  local is_windows = vim.fn.has('win32') == 1
+  local terminal_opts
+  if is_windows then
+    terminal_opts = {
       provider = "external",
       provider_opts = {
         external_terminal_cmd = function(cmd_string, env_table)
-          -- Write a temp nushell script with cd, env vars, and command
           local cwd = vim.fn.getcwd()
           local script_path = vim.fn.expand("$TEMP/claude-launch.nu")
           local f = io.open(script_path, "w")
@@ -24,7 +23,37 @@ function M.setup()
           return { "nu", "-c", string.format("^wt -w 0 nt nu %s", script_path) }
         end,
       },
-    },
+    }
+  else
+    terminal_opts = {
+      provider = "external",
+      provider_opts = {
+        external_terminal_cmd = function(cmd_string, env_table)
+          local cwd = vim.fn.getcwd()
+          local script_path = "/tmp/claude-launch.nu"
+          local resolved_cmd = vim.fn.exepath(cmd_string)
+          if resolved_cmd == "" then resolved_cmd = cmd_string end
+          local cmd_dir = vim.fn.fnamemodify(resolved_cmd, ":h")
+          local f = io.open(script_path, "w")
+          if f then
+            f:write(string.format("$env.PATH = ($env.PATH | prepend '%s')\n", cmd_dir))
+            f:write(string.format("cd '%s'\n", cwd))
+            for k, v in pairs(env_table or {}) do
+              f:write(string.format("$env.%s = '%s'\n", k, v))
+            end
+            f:write(resolved_cmd .. "\n")
+            f:close()
+          end
+          return { "kitty", "@", "launch", "--type=tab", "--title", "Claude", "--cwd", cwd, "nu", script_path }
+        end,
+      },
+    }
+  end
+
+  require("claudecode").setup({
+    terminal_cmd = is_windows and "codeutil" or "claude",
+    log_level = "info",
+    terminal = terminal_opts,
     diff_opts = {
       layout = "vertical",
       open_in_new_tab = true,
