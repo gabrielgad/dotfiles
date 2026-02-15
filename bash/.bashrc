@@ -217,7 +217,7 @@ y() {
 # Nvim wrapper - cd to where you navigated (via leader+cd) when you quit
 v() {
     local tmp="$(mktemp -t "nvim-cwd.XXXXXX")"
-    NVIM_CWD_FILE="$tmp" nvim "$@"
+    NVIM_CWD_FILE="$tmp" neovide "$@"
     if [ -f "$tmp" ]; then
         local cwd="$(cat "$tmp")"
         if [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then

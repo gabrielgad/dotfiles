@@ -52,9 +52,11 @@ You are a functional architecture specialist ensuring strict adherence to the fu
 **Purpose**: The ONLY public layer for a domain — the gate in and out.
 
 **Rules**:
-- NO implementations — delegates down to pipelines only
 - The ONLY code that external domains may import or call
 - All cross-domain wiring flows through api/
+- Delegates to pipelines/ for internal domain logic
+- For cross-domain orchestration: api/ may compose calls to other domains' api/ layers directly
+- When another domain needs to manipulate your state, expose methods on api/ — don't let them reach into your internals
 
 ## Domain Boundaries & Import Rules
 
@@ -65,27 +67,28 @@ Each domain is a self-contained module with its own layer stack.
 - **api/** is the ONLY public layer — the single gate in and out of the domain
 
 ### Cross-Domain Access
-- All cross-domain access flows through api/ layers on both sides
+- All cross-domain access flows through **api/ only** — no other layer crosses domain boundaries
 - Domain A's `api/` calls domain B's `api/` — never reaches into B's internals
-- **types/** may re-export types from another domain's `api/` (type imports only, no function calls) — this makes types/ the domain's type registry for both local and cross-domain type declarations
-- No other internal layer (pure, operations, pipelines) may import from another domain
+- **types/, pure/, operations/, pipelines/** must NEVER import from another domain
+- Do NOT create types/ files that re-export cross-domain types as a bridge — instead, push cross-domain logic into the owning domain's api/ (e.g., ServerState methods)
+- External shared crates (type libraries like protocol/registry crates) are NOT considered domains — they may be used by any layer
 
 ### Within-Domain Access (Import Direction)
 - **pipelines/** can directly access same-domain `types/`, `pure/`, and `operations/`
 - **operations/** must NOT import from pure/, pipelines/, or api/
 - **pure/** must NOT import from operations/, pipelines/, or api/
-- **types/** may import from other domain's api/ (type re-exports only)
-- **api/** delegates down to pipelines/ only
+- **types/** has no imports from other layers
+- **api/** delegates to pipelines/ for internal logic, calls other domains' api/ for cross-domain orchestration
 
 ### Summary Table
 
 | Layer       | Can access (same domain)           | Can access (other domain) |
 |-------------|------------------------------------|---------------------------|
-| types/      | nothing                            | other domain's api/ (types only) |
+| types/      | nothing                            | nothing                   |
 | pure/       | types/ only                        | nothing                   |
 | operations/ | types/ only                        | nothing                   |
 | pipelines/  | types/, pure/, operations/         | nothing                   |
-| api/        | pipelines/ (+ types/ for signatures) | other domain's api/ only  |
+| api/        | all internal layers + types/       | other domain's api/ only  |
 
 ### Pipeline Composition Pattern
 Pipelines are the composition/factory layer — they wrap pures and operations as needed:
@@ -109,9 +112,10 @@ This is the ONLY place where pure functions and operations are called together.
    - API functions with implementations (should delegate to pipelines)
 
 2. **Identify cross-domain violations**:
-   - pure/, operations/, or pipelines/ importing from another domain — only types/ and api/ may cross domain boundaries
+   - types/, pure/, operations/, or pipelines/ importing from another domain — only api/ may cross domain boundaries
    - Any layer importing from another domain's internal types/pure/operations/pipelines/
    - Cross-domain access that doesn't flow through api/ on both sides
+   - types/ files that re-export cross-domain types as a bridge (push logic into owning domain's api/ instead)
 
 3. **Verify directory structure**:
    ```
