@@ -243,12 +243,14 @@ function M.references()
 
     local items = {}
     for _, ref in ipairs(result) do
-      local filename = vim.uri_to_fname(ref.uri)
+      local uri = ref.uri or ref.targetUri
+      local range = ref.range or ref.targetSelectionRange or ref.targetRange
+      local filename = vim.uri_to_fname(uri)
       local bufnr = vim.fn.bufnr(filename)
       local text = ""
 
       if bufnr ~= -1 then
-        local lines = vim.api.nvim_buf_get_lines(bufnr, ref.range.start.line, ref.range.start.line + 1, false)
+        local lines = vim.api.nvim_buf_get_lines(bufnr, range.start.line, range.start.line + 1, false)
         if lines and lines[1] then
           text = lines[1]
         end
@@ -256,7 +258,7 @@ function M.references()
 
       table.insert(items, {
         filename = filename,
-        range = ref.range,
+        range = range,
         text = text
       })
     end
@@ -299,12 +301,14 @@ function M.definitions()
     -- Multiple definitions - use fzf
     local items = {}
     for _, def in ipairs(result) do
-      local filename = vim.uri_to_fname(def.uri)
+      local uri = def.uri or def.targetUri
+      local range = def.range or def.targetSelectionRange or def.targetRange
+      local filename = vim.uri_to_fname(uri)
       local bufnr = vim.fn.bufnr(filename)
       local text = ""
 
       if bufnr ~= -1 then
-        local lines = vim.api.nvim_buf_get_lines(bufnr, def.range.start.line, def.range.start.line + 1, false)
+        local lines = vim.api.nvim_buf_get_lines(bufnr, range.start.line, range.start.line + 1, false)
         if lines and lines[1] then
           text = lines[1]
         end
@@ -312,7 +316,7 @@ function M.definitions()
 
       table.insert(items, {
         filename = filename,
-        range = def.range,
+        range = range,
         text = text
       })
     end
@@ -343,12 +347,14 @@ function M.implementations()
 
     local items = {}
     for _, impl in ipairs(result) do
-      local filename = vim.uri_to_fname(impl.uri)
+      local uri = impl.uri or impl.targetUri
+      local range = impl.range or impl.targetSelectionRange or impl.targetRange
+      local filename = vim.uri_to_fname(uri)
       local bufnr = vim.fn.bufnr(filename)
       local text = ""
 
       if bufnr ~= -1 then
-        local lines = vim.api.nvim_buf_get_lines(bufnr, impl.range.start.line, impl.range.start.line + 1, false)
+        local lines = vim.api.nvim_buf_get_lines(bufnr, range.start.line, range.start.line + 1, false)
         if lines and lines[1] then
           text = lines[1]
         end
@@ -356,7 +362,7 @@ function M.implementations()
 
       table.insert(items, {
         filename = filename,
-        range = impl.range,
+        range = range,
         text = text
       })
     end
