@@ -357,6 +357,44 @@ set_wallpaper() {
     fi
 }
 
+# Install nvim colorscheme from theme
+apply_nvim_colorscheme() {
+    local theme_dir="$1"
+    local theme_name="$2"
+    local nvim_theme="${theme_dir}/nvim.lua"
+    local nvim_config="$HOME/.config/nvim"
+
+    [[ ! -f "$nvim_theme" ]] && return 0
+
+    echo ""
+    log_info "Installing nvim colorscheme..."
+
+    # Install lua module
+    local lua_dir="${nvim_config}/lua/${theme_name}"
+    mkdir -p "$lua_dir"
+    cp "$nvim_theme" "${lua_dir}/init.lua"
+
+    # Create vim wrapper
+    local colors_dir="${nvim_config}/colors"
+    mkdir -p "$colors_dir"
+    echo "\" ${theme_name} colorscheme wrapper
+lua require('${theme_name}').setup()" > "${colors_dir}/${theme_name}.vim"
+
+    # Update init.lua colorscheme line
+    local init_lua="${nvim_config}/init.lua"
+    if [[ -f "$init_lua" ]]; then
+        if grep -q "vim.cmd('colorscheme " "$init_lua"; then
+            sed -i "s|vim.cmd('colorscheme [^']*')|vim.cmd('colorscheme ${theme_name}')|" "$init_lua"
+        else
+            echo "" >> "$init_lua"
+            echo "-- Colorscheme (set by themix apply)" >> "$init_lua"
+            echo "vim.cmd('colorscheme ${theme_name}')" >> "$init_lua"
+        fi
+    fi
+
+    log_success "nvim colorscheme '${theme_name}' installed"
+}
+
 # Update niri config border colors
 apply_niri_colors() {
     local theme_dir="$1"
@@ -442,7 +480,7 @@ main() {
     fi
 
     # Check required files
-    local required=("waybar-themix.css" "hyprland.conf" "kitty.conf")
+    local required=("waybar-themix.css" "kitty.conf")
     for file in "${required[@]}"; do
         if [[ ! -f "${theme_dir}/${file}" ]]; then
             log_error "Missing required file: ${file}"
@@ -459,6 +497,7 @@ main() {
     apply_gtk_settings "$theme_name"
     apply_gtk_overrides "$theme_dir"
     apply_optional_themes "$theme_dir" "$theme_name"
+    apply_nvim_colorscheme "$theme_dir" "$theme_name"
     apply_niri_colors "$theme_dir"
     update_current_link "$theme_dir"
 

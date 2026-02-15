@@ -68,6 +68,9 @@ require('build-errors').setup()
 -- Oil file explorer
 require('oil-config').setup()
 
+-- Colorscheme (set by themix apply)
+vim.cmd('colorscheme eberhardgross-640781')
+
 -- Disable unused providers and features to reduce startup time
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
