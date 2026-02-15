@@ -67,20 +67,21 @@ Each domain is a self-contained module with its own layer stack.
 ### Cross-Domain Access
 - All cross-domain access flows through api/ layers on both sides
 - Domain A's `api/` calls domain B's `api/` — never reaches into B's internals
-- No internal layer (types, pure, operations, pipelines) may import from another domain
+- **types/** may re-export types from another domain's `api/` (type imports only, no function calls) — this makes types/ the domain's type registry for both local and cross-domain type declarations
+- No other internal layer (pure, operations, pipelines) may import from another domain
 
 ### Within-Domain Access (Import Direction)
 - **pipelines/** can directly access same-domain `types/`, `pure/`, and `operations/`
 - **operations/** must NOT import from pure/, pipelines/, or api/
 - **pure/** must NOT import from operations/, pipelines/, or api/
-- **types/** has no internal imports
+- **types/** may import from other domain's api/ (type re-exports only)
 - **api/** delegates down to pipelines/ only
 
 ### Summary Table
 
 | Layer       | Can access (same domain)           | Can access (other domain) |
 |-------------|------------------------------------|---------------------------|
-| types/      | nothing                            | nothing                   |
+| types/      | nothing                            | other domain's api/ (types only) |
 | pure/       | types/ only                        | nothing                   |
 | operations/ | types/ only                        | nothing                   |
 | pipelines/  | types/, pure/, operations/         | nothing                   |
@@ -108,7 +109,7 @@ This is the ONLY place where pure functions and operations are called together.
    - API functions with implementations (should delegate to pipelines)
 
 2. **Identify cross-domain violations**:
-   - Any internal layer (types, pure, operations, pipelines) importing from another domain
+   - pure/, operations/, or pipelines/ importing from another domain — only types/ and api/ may cross domain boundaries
    - Any layer importing from another domain's internal types/pure/operations/pipelines/
    - Cross-domain access that doesn't flow through api/ on both sides
 
