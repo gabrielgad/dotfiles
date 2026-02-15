@@ -76,6 +76,7 @@ if [ "$OS" = "linux" ]; then
     echo "--- Linux-only ---"
     link "$DOTFILES/kitty"    "$HOME/.config/kitty"
     link "$DOTFILES/hypr"     "$HOME/.config/hypr"
+    link "$DOTFILES/niri"     "$HOME/.config/niri"
     link "$DOTFILES/nushell"  "$HOME/.config/nushell"
     link "$DOTFILES/themes"   "$HOME/.config/themes"
 fi
