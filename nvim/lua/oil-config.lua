@@ -15,9 +15,8 @@ function M.setup()
 
     columns = {
       "icon",
-      -- "permissions",
-      -- "size",
-      -- "mtime",
+      "size",
+      "mtime",
     },
 
     -- Window settings
