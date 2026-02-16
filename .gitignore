@@ -2,6 +2,7 @@
 nvim/colors/
 nvim/lua/golden-lion/
 nvim/lua/breath-darker/
+nvim/lua/eberhardgross-640781/
 
 # Theme symlink + generated theme dirs
 themes/*/
