@@ -1,0 +1,103 @@
+# Claude Code status line for Nushell (matching Linux style)
+
+def statusline []: string -> string {
+    let d = $in | from json
+
+    # Directory with icon
+    let cwd = $d.cwd
+    let dir = if ($cwd | str starts-with $env.USERPROFILE) {
+        $"~($cwd | str replace $env.USERPROFILE '')"
+    } else { $cwd | path basename }
+
+    # Git information
+    let git_info = try {
+        cd $cwd
+        let branch = try { ^git branch --show-current | str trim } catch { "" }
+        if ($branch | is-empty) {
+            ""
+        } else {
+            # Check dirty status
+            let untracked_files = try {
+                ^git ls-files --others --exclude-standard | lines | where { |l| not ($l | is-empty) }
+            } catch { [] }
+            let untracked_count = $untracked_files | length
+            let untracked_lines = if $untracked_count > 0 {
+                try {
+                    $untracked_files | each { |f| open $f | lines | length } | math sum
+                } catch { 0 }
+            } else { 0 }
+
+            let tracked_dirty = try {
+                let diff_exit = (^git diff --quiet | complete).exit_code
+                let cached_exit = (^git diff --cached --quiet | complete).exit_code
+                $diff_exit != 0 or $cached_exit != 0
+            } catch { false }
+
+            let dirty_part = if (not $tracked_dirty) and ($untracked_count == 0) {
+                " ✅"
+            } else {
+                " ✏️"
+            }
+
+            # Check ahead/behind remote
+            let sync_part = try {
+                let upstream = try { ^git rev-parse --abbrev-ref '@{upstream}' | str trim } catch { "" }
+                if ($upstream | is-empty) {
+                    ""
+                } else {
+                    let ahead = try { ^git rev-list --count $"@{upstream}..HEAD" | str trim | into int } catch { 0 }
+                    let behind = try { ^git rev-list --count $"HEAD..@{upstream}" | str trim | into int } catch { 0 }
+                    (
+                        (if $ahead > 0 { $" ↑($ahead)" } else { "" })
+                        + (if $behind > 0 { $" ↓($behind)" } else { "" })
+                    )
+                }
+            } catch { "" }
+
+            $" 🌿 ($branch)($dirty_part)($sync_part)"
+        }
+    } catch { "" }
+
+    # Context window calculation from transcript (last API call usage)
+    let fmt = { |n| if $n >= 1000000 { $"(($n / 1000000) | math round --precision 1)M" } else if $n >= 1000 { $"($n / 1000 | math round)K" } else { $"($n)" } }
+    let transcript_path = $d.transcript_path? | default ""
+    let ctx_total = if ($transcript_path != "" and ($transcript_path | path exists)) {
+        try {
+            let lines = open $transcript_path | lines | reverse | first 100
+            let usage_line = $lines | where { |line|
+                let p = try { $line | from json } catch { {} }
+                (($p | get -o message.usage) != null) and (($p | get -o isSidechain | default false) == false)
+            } | first
+            let entry = $usage_line | from json
+            let u = $entry.message.usage
+            ($u | get -o input_tokens | default 0) + ($u | get -o cache_read_input_tokens | default 0) + ($u | get -o cache_creation_input_tokens | default 0)
+        } catch { 0 }
+    } else { 0 }
+    let ctx_size = $d.context_window?.context_window_size? | default 200000
+    let pct = if $ctx_size > 0 { (($ctx_total / $ctx_size) * 100) | math round } else { 0 }
+    let pct_color = if $pct >= 80 { (ansi red) } else if $pct >= 50 { (ansi yellow) } else { (ansi green) }
+    let ctx_display = do $fmt $ctx_total
+
+    # API Latency (cached for 60 seconds)
+    let ping_cache = [$env.USERPROFILE, ".claude", "api-ping-cache"] | path join
+    let ping_ms = try {
+        let use_cache = if ($ping_cache | path exists) {
+            let modified = (ls $ping_cache | get 0.modified)
+            let age = ((date now) - $modified) | into int | $in / 1_000_000_000
+            $age < 60
+        } else { false }
+
+        if $use_cache {
+            open $ping_cache | str trim | into float | math round
+        } else {
+            let result = (^curl -o /dev/null -s -w '%{time_connect}' https://api.anthropic.com --connect-timeout 2 | str trim)
+            let ms = ($result | into float) * 1000 | math round
+            $ms | into string | save -f $ping_cache
+            $ms
+        }
+    } catch { 0 }
+    let ping_str = if $ping_ms > 0 { $" | (ansi white)🏓 ($ping_ms)ms(ansi reset)" } else { "" }
+
+    # Build output
+    $"(ansi cyan)📁 ($dir)(ansi reset)(ansi green)($git_info)(ansi reset) | ($pct_color)🧠 ($ctx_display) ($pct)%(ansi reset)($ping_str)"
+}
