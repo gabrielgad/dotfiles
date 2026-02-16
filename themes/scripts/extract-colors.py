@@ -189,7 +189,7 @@ def extract_colors(image_path, num_colors=5):
         is_different = True
         for _, sel_color, _, sel_h, _, _ in selected:
             hue_diff = min(abs(h - sel_h), 1 - abs(h - sel_h))
-            if hue_diff < 0.08:  # Too similar in hue
+            if hue_diff < 0.10:  # Too similar in hue (~36°)
                 is_different = False
                 break
         if is_different:
@@ -264,34 +264,67 @@ def generate_text_colors(surface_primary, mode='dark'):
         }
 
 
+def semantic_color(base_hue, theme_hue, tint, saturation, lightness):
+    """Generate ANSI color blended toward theme hue.
+    base_hue: standard ANSI hue (0-1 scale, e.g. 0=red, 1/3=green)
+    theme_hue: accent hue to tint toward (0-1 scale)
+    tint: 0.0=pure ANSI, 1.0=fully theme colored
+    """
+    hue_diff = theme_hue - base_hue
+    if hue_diff > 0.5: hue_diff -= 1.0
+    elif hue_diff < -0.5: hue_diff += 1.0
+    blended = base_hue + hue_diff * tint
+    if blended < 0: blended += 1.0
+    elif blended >= 1.0: blended -= 1.0
+    return hsl_to_rgb(blended, saturation, lightness)
+
+
 def generate_terminal_colors(accents, surfaces, texts, mode='dark'):
-    """Generate 16 ANSI terminal colors"""
-    # Ensure we have enough accents
+    """Generate 16 ANSI terminal colors using multi-accent tinting.
+    Each ANSI color blends toward a different accent hue for maximum variety.
+    """
     while len(accents) < 4:
         accents.append(accents[-1])
 
-    # Create varied terminal colors from accents
-    a0_h, a0_s, a0_l = rgb_to_hsl(*accents[0])
-    a1_h, a1_s, a1_l = rgb_to_hsl(*accents[1])
-    a2_h, a2_s, a2_l = rgb_to_hsl(*accents[2])
+    hue1 = rgb_to_hsl(*accents[0])[0]  # primary accent
+    hue2 = rgb_to_hsl(*accents[1])[0]  # secondary accent
+    hue3 = rgb_to_hsl(*accents[2])[0]  # tertiary accent
+    hue4 = rgb_to_hsl(*accents[3])[0]  # quaternary accent
+    tint = 0.35  # Warm toward theme but keep ANSI hue identity
+
+    # Sort accent hues by proximity to each ANSI base hue.
+    # Each ANSI color tints toward the nearest accent for natural mapping.
+    accent_hues = [hue1, hue2, hue3, hue4]
+
+    def nearest_accent(base_hue_deg):
+        """Find the accent hue nearest to a base ANSI hue (in 0-1 scale)."""
+        base = base_hue_deg / 360.0
+        best = accent_hues[0]
+        best_dist = 1.0
+        for ah in accent_hues:
+            d = min(abs(ah - base), 1 - abs(ah - base))
+            if d < best_dist:
+                best_dist = d
+                best = ah
+        return best
 
     return {
-        'color0': surfaces['primary'],           # Black
-        'color1': hsl_to_rgb(a0_h, a0_s, a0_l * 0.9),   # Red
-        'color2': hsl_to_rgb(a1_h, a1_s, a1_l * 0.9),   # Green
-        'color3': hsl_to_rgb(a0_h, a0_s, a0_l * 1.1),   # Yellow
-        'color4': hsl_to_rgb(a1_h, a1_s, a1_l * 0.85),  # Blue
-        'color5': hsl_to_rgb(a2_h, a2_s, a2_l * 0.9),   # Magenta
-        'color6': hsl_to_rgb(a2_h, a2_s, a2_l * 0.9),   # Cyan
-        'color7': texts['tertiary'],             # White (dim)
-        'color8': surfaces['tertiary'],          # Bright black
-        'color9': hsl_to_rgb(a0_h, a0_s, min(1, a0_l * 1.2)),   # Bright red
-        'color10': hsl_to_rgb(a1_h, a1_s, min(1, a1_l * 1.15)), # Bright green
-        'color11': hsl_to_rgb(a0_h, a0_s, min(1, a0_l * 1.25)), # Bright yellow
-        'color12': hsl_to_rgb(a1_h, a1_s, min(1, a1_l * 1.1)),  # Bright blue
-        'color13': hsl_to_rgb(a2_h, a2_s, min(1, a2_l * 1.15)), # Bright magenta
-        'color14': hsl_to_rgb(a2_h, a2_s, min(1, a2_l * 1.15)), # Bright cyan
-        'color15': texts['primary'],             # Bright white
+        'color0': surfaces['primary'],                                                  # black
+        'color1': semantic_color(0/360, nearest_accent(0), tint, 0.60, 0.50),          # red
+        'color2': semantic_color(120/360, nearest_accent(120), tint, 0.50, 0.48),      # green
+        'color3': semantic_color(45/360, nearest_accent(45), tint, 0.60, 0.55),        # yellow
+        'color4': semantic_color(220/360, nearest_accent(220), tint, 0.50, 0.50),      # blue
+        'color5': semantic_color(300/360, nearest_accent(300), tint, 0.45, 0.50),      # magenta
+        'color6': semantic_color(180/360, nearest_accent(180), tint, 0.45, 0.48),      # cyan
+        'color7': texts['tertiary'],                                                    # white (dim)
+        'color8': surfaces['tertiary'],                                                 # bright black
+        'color9': semantic_color(0/360, nearest_accent(0), tint, 0.65, 0.62),          # bright red
+        'color10': semantic_color(120/360, nearest_accent(120), tint, 0.55, 0.58),     # bright green
+        'color11': semantic_color(50/360, nearest_accent(50), tint, 0.65, 0.65),       # bright yellow
+        'color12': semantic_color(220/360, nearest_accent(220), tint, 0.55, 0.60),     # bright blue
+        'color13': semantic_color(300/360, nearest_accent(300), tint, 0.50, 0.60),     # bright magenta
+        'color14': semantic_color(180/360, nearest_accent(180), tint, 0.50, 0.58),     # bright cyan
+        'color15': texts['primary'],                                                    # bright white
     }
 
 
@@ -387,6 +420,8 @@ def build_colors_yaml(theme_name, wallpaper_path, accents, surfaces, texts, term
             'secondary_rgb': rgb_to_hex_raw(accents[1]),
             'tertiary': rgb_to_hex(accents[2]),
             'tertiary_rgb': rgb_to_hex_raw(accents[2]),
+            'quaternary': rgb_to_hex(accents[3]),
+            'quaternary_rgb': rgb_to_hex_raw(accents[3]),
         },
         'border': {
             'primary': rgb_to_hex(accents[1]),

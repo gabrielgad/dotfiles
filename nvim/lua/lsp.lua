@@ -158,7 +158,8 @@ function M.setup()
       return false
     end, { upward = true })
 
-    local root_dir = found[1] and vim.fs.dirname(found[1]) or vim.fn.getcwd()
+    local root_dir = found[1] and vim.fs.dirname(found[1]) or nil
+    if not root_dir then return end
 
     -- Start LSP
     vim.lsp.start({

@@ -16,27 +16,27 @@ selection = { fg = "#13120F", bg = "#DAB624", bold = true }
 
 # Border
 border_symbol = "│"
-border_style = { fg = "#D0A898" }
+border_style = { fg = "#7F9F5F" }
 
 # Markers
 marker_selected = { fg = "#DAB624", bg = "#DAB624" }
-marker_copied = { fg = "#DEBD39", bg = "#DEBD39" }
-marker_cut = { fg = "#C4A320", bg = "#C4A320" }
+marker_copied = { fg = "#D1B147", bg = "#D1B147" }
+marker_cut = { fg = "#CC3D32", bg = "#CC3D32" }
 
 # Count
-count_copied = { fg = "#13120F", bg = "#DEBD39" }
-count_cut = { fg = "#13120F", bg = "#C4A320" }
+count_copied = { fg = "#13120F", bg = "#D1B147" }
+count_cut = { fg = "#13120F", bg = "#CC3D32" }
 count_selected = { fg = "#13120F", bg = "#DAB624" }
 
 [mode]
 normal_main = { fg = "#13120F", bg = "#DAB624", bold = true }
 normal_alt = { fg = "#DAB624", bg = "#1C1B16" }
 
-select_main = { fg = "#13120F", bg = "#DEBD39", bold = true }
-select_alt = { fg = "#DEBD39", bg = "#1C1B16" }
+select_main = { fg = "#13120F", bg = "#D1B147", bold = true }
+select_alt = { fg = "#D1B147", bg = "#1C1B16" }
 
-unset_main = { fg = "#13120F", bg = "#C4A320", bold = true }
-unset_alt = { fg = "#C4A320", bg = "#1C1B16" }
+unset_main = { fg = "#13120F", bg = "#CC3D32", bold = true }
+unset_alt = { fg = "#CC3D32", bg = "#1C1B16" }
 
 [status]
 separator_open = ""
@@ -45,20 +45,20 @@ separator_style = { fg = "#1C1B16", bg = "#1C1B16" }
 
 # Mode indicators
 mode_normal = { fg = "#13120F", bg = "#DAB624", bold = true }
-mode_select = { fg = "#13120F", bg = "#DEBD39", bold = true }
-mode_unset = { fg = "#13120F", bg = "#C4A320", bold = true }
+mode_select = { fg = "#13120F", bg = "#D1B147", bold = true }
+mode_unset = { fg = "#13120F", bg = "#CC3D32", bold = true }
 
 # Progress
 progress_label = { fg = "#EBEAEA", bold = true }
 progress_normal = { fg = "#DAB624", bg = "#1C1B16" }
-progress_error = { fg = "#C4A320", bg = "#1C1B16" }
+progress_error = { fg = "#CC3D32", bg = "#1C1B16" }
 
 # Permissions
 permissions_t = { fg = "#DAB624" }
-permissions_r = { fg = "#C4937F" }
-permissions_w = { fg = "#DEBD39" }
-permissions_x = { fg = "#C4A320" }
-permissions_s = { fg = "#82A340" }
+permissions_r = { fg = "#52B73D" }
+permissions_w = { fg = "#D1B147" }
+permissions_x = { fg = "#CC3D32" }
+permissions_s = { fg = "#B84688" }
 
 [select]
 border = { fg = "#DAB624" }
@@ -95,15 +95,15 @@ separator_style = { fg = "#28261E" }
 
 [help]
 on = { fg = "#DAB624" }
-run = { fg = "#D0A898" }
+run = { fg = "#7F9F5F" }
 desc = { fg = "#EBEAEA" }
 hovered = { reversed = true }
 footer = { fg = "#D1D1D0", bg = "#1C1B16" }
 
 [notify]
 title_info = { fg = "#DAB624" }
-title_warn = { fg = "#DEBD39" }
-title_error = { fg = "#C4A320" }
+title_warn = { fg = "#D1B147" }
+title_error = { fg = "#CC3D32" }
 
 [filetype]
 rules = [
@@ -111,34 +111,34 @@ rules = [
     { mime = "inode/directory", fg = "#DAB624", bold = true },
 
     # Symlinks
-    { name = "*", is = "link", fg = "#82A340" },
+    { name = "*", is = "link", fg = "#43B1B1" },
 
     # Executables
-    { name = "*", is = "exec", fg = "#C4937F" },
+    { name = "*", is = "exec", fg = "#52B73D" },
 
     # Hidden files - dimmed
     { name = ".*", fg = "#B8B8B6" },
 
     # Code files - secondary accent
-    { name = "*.{rs,go,py,js,ts,jsx,tsx,c,cpp,h,hpp,java,rb,php,lua}", fg = "#D0A898" },
+    { name = "*.{rs,go,py,js,ts,jsx,tsx,c,cpp,h,hpp,java,rb,php,lua}", fg = "#7F9F5F" },
 
     # Config files - yellow/orange
-    { name = "*.{json,yaml,yml,toml,xml,ini,conf,config}", fg = "#DEBD39" },
+    { name = "*.{json,yaml,yml,toml,xml,ini,conf,config}", fg = "#D1B147" },
 
     # Archives - magenta
-    { mime = "application/{zip,gzip,x-tar,x-7z-compressed,x-rar,x-bzip2,x-xz}", fg = "#82A340" },
+    { mime = "application/{zip,gzip,x-tar,x-7z-compressed,x-rar,x-bzip2,x-xz}", fg = "#B84688" },
 
     # Images - cyan
-    { mime = "image/*", fg = "#82A340" },
+    { mime = "image/*", fg = "#43B1B1" },
 
     # Videos - red
-    { mime = "video/*", fg = "#C4A320" },
+    { mime = "video/*", fg = "#CC3D32" },
 
     # Audio - magenta
-    { mime = "audio/*", fg = "#82A340" },
+    { mime = "audio/*", fg = "#B84688" },
 
     # Documents
-    { name = "*.{pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp}", fg = "#DEBD39" },
+    { name = "*.{pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp}", fg = "#D1B147" },
 
     # Markdown/text
     { name = "*.{md,txt,rst}", fg = "#EBEAEA" },
