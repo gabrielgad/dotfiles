@@ -369,28 +369,25 @@ apply_nvim_colorscheme() {
     echo ""
     log_info "Installing nvim colorscheme..."
 
+    # Clean old colorschemes (only one active at a time)
+    local colors_dir="${nvim_config}/colors"
+    for old_vim in "${colors_dir}"/*.vim; do
+        [[ ! -f "$old_vim" ]] && continue
+        local old_name
+        old_name="$(basename "$old_vim" .vim)"
+        rm -f "$old_vim"
+        rm -rf "${nvim_config}/lua/${old_name}"
+    done
+
     # Install lua module
     local lua_dir="${nvim_config}/lua/${theme_name}"
     mkdir -p "$lua_dir"
     cp "$nvim_theme" "${lua_dir}/init.lua"
 
-    # Create vim wrapper
-    local colors_dir="${nvim_config}/colors"
+    # Create vim wrapper (init.lua auto-discovers from colors/)
     mkdir -p "$colors_dir"
     echo "\" ${theme_name} colorscheme wrapper
 lua require('${theme_name}').setup()" > "${colors_dir}/${theme_name}.vim"
-
-    # Update init.lua colorscheme line
-    local init_lua="${nvim_config}/init.lua"
-    if [[ -f "$init_lua" ]]; then
-        if grep -q "vim.cmd('colorscheme " "$init_lua"; then
-            sed -i "s|vim.cmd('colorscheme [^']*')|vim.cmd('colorscheme ${theme_name}')|" "$init_lua"
-        else
-            echo "" >> "$init_lua"
-            echo "-- Colorscheme (set by themix apply)" >> "$init_lua"
-            echo "vim.cmd('colorscheme ${theme_name}')" >> "$init_lua"
-        fi
-    fi
 
     log_success "nvim colorscheme '${theme_name}' installed"
 }
