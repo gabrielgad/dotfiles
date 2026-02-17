@@ -82,11 +82,11 @@ Each domain is a self-contained module with its own layer stack.
 - **Exception**: a designated core orchestrator module may be used by any layer, as it defines the fundamental state that all domains operate on
 
 ### Within-Domain Access (Import Direction)
-- **pipelines/** can directly access same-domain `types/`, `pure/`, and `operations/`
-- **operations/** must NOT import from pure/, pipelines/, or api/
-- **pure/** must NOT import from operations/, pipelines/, or api/
-- **types/** has no imports from other layers
-- **api/** delegates to pipelines/ for internal logic, calls other domains' api/ for cross-domain orchestration
+- **types/** has no imports — not from other layers, not from other types/ files
+- **pure/** can ONLY import from types/ — not from other pure/ files, not from any other layer
+- **operations/** can ONLY import from types/ — not from other operations/ files, not from any other layer
+- **pipelines/** can import from types/, pure/, and operations/
+- **api/** can import from all internal layers and re-export from any of them (types, pure, operations, pipelines). Prefer pushing logic down into pipelines and extracting code from api/ into internal layers. For cross-domain orchestration, calls other domains' api/ layers.
 
 ### Summary Table
 
@@ -108,6 +108,15 @@ pipeline() {
 }
 ```
 This is the ONLY place where pure functions and operations are called together.
+
+### Genericization Pattern
+When a pure/ function needs to call another pure/ function, it cannot import it directly (pure/ can only import from types/). Instead, genericize over the dependency:
+
+1. **Define the function signature as a type in types/** — e.g., `type InterpolatePathFn = (start: GridPos, end: GridPos) => GridPos[]`
+2. **Accept the type as a parameter in the pure/ function** — the pure/ file imports only the type from types/, not the concrete implementation
+3. **api/ binds the concrete implementation** — api/ imports the pure/ function that needs the dependency AND the pure/ function that satisfies it, then wires them together
+
+This keeps internal layers agnostic to each other while api/ does the binding — the same pattern used in Rust crates where internal layers are genericized over external types and api/ binds concrete types.
 
 ## When Reviewing Code
 

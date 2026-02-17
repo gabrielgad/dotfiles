@@ -58,8 +58,8 @@ layout {
 
     border {
         width 4
-        active-gradient from="#7F9F5F" to="#DAB624" angle=45
-        inactive-color "#28261E"
+        active-gradient from="#ED5E82" to="#00DAFF" angle=45
+        inactive-color "#1C282A"
     }
 
     shadow {
@@ -67,7 +67,7 @@ layout {
         softness 30
         spread 5
         offset x=0 y=5
-        color "#13120Fcc"
+        color "#0F1314cc"
     }
 
     struts {
