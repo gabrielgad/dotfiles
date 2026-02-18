@@ -1,8 +1,7 @@
-# Themix-generated nvim colorschemes
+# Themix-managed files (theme-specific, vary per machine)
+# nvim colorschemes (dirs under lua/ are always themix; real modules are flat .lua files)
 nvim/colors/
-nvim/lua/golden-lion/
-nvim/lua/breath-darker/
-nvim/lua/eberhardgross-640781/
+nvim/lua/*/
 
 # Theme symlink + generated theme dirs
 themes/*/
@@ -13,9 +12,16 @@ themes/current
 # Kitty theme (symlink managed by themix)
 kitty/theme.conf
 
-# Hypr theme files (symlinks managed by themix)
+# Hypr theme files (managed by themix)
 hypr/theme.conf
 hypr/hyprlock-theme.conf
+hypr/config/environment.conf
+
+# Niri theme (symlink managed by themix)
+niri/theme.kdl
+
+# Yazi theme (copy managed by themix)
+yazi/theme.toml
 
 # Nushell runtime files
 nushell/history.*
