@@ -1,14 +1,30 @@
 -- LSP configuration for multiple languages
 local M = {}
 
+-- Memory limit per LSP server (in bytes). Enforced via systemd cgroups.
+-- Servers that exceed this are killed by the kernel, and nvim will auto-restart
+-- them on the next request — effectively a periodic leak reset.
+local LSP_MEMORY_MAX = '4G'
+
+-- Wrap an LSP cmd table with systemd-run memory capping (Linux only)
+local function capped_cmd(cmd)
+  if vim.fn.has('win32') == 1 or vim.fn.executable('systemd-run') ~= 1 then
+    return cmd
+  end
+  local capped = {'systemd-run', '--user', '--scope', '-p', 'MemoryMax=' .. LSP_MEMORY_MAX, '--'}
+  for _, arg in ipairs(cmd) do
+    table.insert(capped, arg)
+  end
+  return capped
+end
+
 -- LSP setup function
 function M.setup()
-  -- Enable LSP logging for debugging
-  vim.lsp.set_log_level("info")
-  
+  vim.lsp.set_log_level("warn")
+
   -- Enable basic completion
   vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
-  
+
   -- LSP key mappings
   local function on_attach(client, bufnr)
     -- Use centralized LSP keybinds
@@ -17,12 +33,12 @@ function M.setup()
 
   -- Enhanced capabilities for autocompletion
   local capabilities = vim.lsp.protocol.make_client_capabilities()
-  
+
   -- LSP configurations (only start when needed)
   local lsp_configs = {
     go = {
       name = 'gopls',
-      cmd = {'gopls'},
+      cmd = capped_cmd({'gopls'}),
       filetypes = {'go', 'gomod', 'gowork', 'gotmpl'},
       root_patterns = {'go.work', 'go.mod', '.git'},
       settings = {
@@ -37,7 +53,7 @@ function M.setup()
     },
     rust = {
       name = 'rust_analyzer',
-      cmd = {'rust-analyzer'},
+      cmd = capped_cmd({'rust-analyzer'}),
       filetypes = {'rust'},
       root_patterns = {'Cargo.toml', '.git'},
       settings = {
@@ -53,37 +69,37 @@ function M.setup()
     },
     zig = {
       name = 'zls',
-      cmd = {'zls'},
+      cmd = capped_cmd({'zls'}),
       filetypes = {'zig'},
       root_patterns = {'build.zig', '.git'},
     },
     c = {
       name = 'clangd',
-      cmd = {'clangd'},
+      cmd = capped_cmd({'clangd'}),
       filetypes = {'c', 'cpp', 'objc', 'objcpp'},
       root_patterns = {'compile_commands.json', 'compile_flags.txt', '.clangd', '.git'},
     },
     typescript = {
       name = 'typescript-language-server',
-      cmd = {'typescript-language-server', '--stdio'},
+      cmd = capped_cmd({'typescript-language-server', '--stdio'}),
       filetypes = {'javascript', 'javascriptreact', 'typescript', 'typescriptreact'},
       root_patterns = {'tsconfig.json', 'package.json', 'jsconfig.json', '.git'},
     },
     fsharp = {
       name = 'fsautocomplete',
-      cmd = {'fsautocomplete', '--background-service-enabled'},
+      cmd = capped_cmd({'fsautocomplete', '--background-service-enabled'}),
       filetypes = {'fsharp'},
       root_patterns = {'*.sln', '*.fsproj', '.git'},
     },
     csharp = {
       name = 'omnisharp',
-      cmd = {'omnisharp', '-lsp'},
+      cmd = capped_cmd({'omnisharp', '-lsp'}),
       filetypes = {'cs'},
       root_patterns = {'*.sln', '*.csproj', '.git'},
     },
     lua = {
       name = 'lua_ls',
-      cmd = {'lua-language-server'},
+      cmd = capped_cmd({'lua-language-server'}),
       filetypes = {'lua'},
       root_patterns = {'.luarc.json', '.luarc.jsonc', '.luacheckrc', '.stylua.toml', 'stylua.toml', '.git'},
       settings = {
@@ -99,7 +115,7 @@ function M.setup()
     },
     html = {
       name = 'html-lsp',
-      cmd = {'vscode-html-language-server', '--stdio'},
+      cmd = capped_cmd({'vscode-html-language-server', '--stdio'}),
       filetypes = {'html'},
       root_patterns = {'package.json', '.git'},
       settings = {
@@ -132,15 +148,23 @@ function M.setup()
 
     if not config then return end
 
-    -- On Windows, npm-installed servers are POSIX shell scripts that native nvim can't spawn.
-    -- Always prefer the .cmd wrapper if it exists.
     local cmd = vim.deepcopy(config.cmd)
-    if vim.fn.has('win32') == 1 and vim.fn.executable(cmd[1] .. '.cmd') == 1 then
-      cmd[1] = cmd[1] .. '.cmd'
+
+    -- The actual LSP binary is after the systemd-run wrapper args
+    local lsp_bin_idx = 1
+    if cmd[1] == 'systemd-run' then
+      for i, arg in ipairs(cmd) do
+        if arg == '--' then lsp_bin_idx = i + 1; break end
+      end
+    end
+
+    -- On Windows, npm-installed servers are POSIX shell scripts that native nvim can't spawn.
+    if vim.fn.has('win32') == 1 and vim.fn.executable(cmd[lsp_bin_idx] .. '.cmd') == 1 then
+      cmd[lsp_bin_idx] = cmd[lsp_bin_idx] .. '.cmd'
     end
 
     -- Check if the LSP binary exists
-    if vim.fn.executable(cmd[1]) ~= 1 then
+    if vim.fn.executable(cmd[lsp_bin_idx]) ~= 1 then
       return
     end
 
@@ -161,7 +185,7 @@ function M.setup()
     local root_dir = found[1] and vim.fs.dirname(found[1]) or nil
     if not root_dir then return end
 
-    -- Start LSP
+    -- Start LSP (vim.lsp.start reuses existing client for same name+root_dir)
     vim.lsp.start({
       name = config.name,
       cmd = cmd,

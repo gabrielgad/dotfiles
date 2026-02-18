@@ -58,8 +58,8 @@ layout {
 
     border {
         width 4
-        active-gradient from="#ED5E82" to="#00DAFF" angle=45
-        inactive-color "#1C282A"
+        active-gradient from="#B8F8F8" to="#80B8F8" angle=45
+        inactive-color "#1D232A"
     }
 
     shadow {
@@ -67,7 +67,7 @@ layout {
         softness 30
         spread 5
         offset x=0 y=5
-        color "#0F1314cc"
+        color "#0F1114cc"
     }
 
     struts {
@@ -88,7 +88,7 @@ spawn-at-startup "blueman-applet"
 spawn-at-startup "mako"
 spawn-at-startup "wl-paste" "-t" "text" "--watch" "clipman" "store"
 spawn-at-startup "udiskie" "-ans"
-spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets,ssh" "--unlock-timeout=3600"
+// gnome-keyring-daemon is started and unlocked by PAM (/etc/pam.d/ly) at login
 spawn-at-startup "bitwarden-desktop"
 spawn-at-startup "sh" "-c" "ELECTRON_OZONE_PLATFORM_HINT=x11 DISPLAY=:0 discord"
 
@@ -168,6 +168,7 @@ binds {
     Mod+Shift+W { spawn "brave" "--password-store=basic"; }
     Mod+Shift+E { spawn "bash" "-ic" "v"; }
     Mod+Shift+S { spawn "kitty" "-e" "btop"; }
+    Mod+Shift+Y { spawn "bash" "-c" "~/.config/niri/scripts/yt-pause-on-unfocus-toggle.sh"; }
     Mod+Shift+D { spawn "claude-desktop"; }
     Mod+Shift+C { spawn "obsidian"; }
 
