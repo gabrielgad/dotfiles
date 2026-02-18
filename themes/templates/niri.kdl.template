@@ -12,6 +12,7 @@ layout {
 
     // Border (around all 4 sides)
     border {
+        on
         width 4
         active-gradient from="{{border.primary}}" to="{{accent.primary}}" angle=45
         inactive-color "{{semantic.inactive}}"

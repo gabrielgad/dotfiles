@@ -56,20 +56,6 @@ layout {
         off
     }
 
-    border {
-        width 4
-        active-gradient from="#B8F8F8" to="#80B8F8" angle=45
-        inactive-color "#1D232A"
-    }
-
-    shadow {
-        on
-        softness 30
-        spread 5
-        offset x=0 y=5
-        color "#0F1114cc"
-    }
-
     struts {
         left 4
         right 4
@@ -77,6 +63,9 @@ layout {
         bottom 4
     }
 }
+
+// Theme (border, shadow, window rules, etc.) managed by themix
+include "theme.kdl"
 
 // Startup applications
 // xwayland-satellite is started via systemd user service instead (for proper DISPLAY propagation)

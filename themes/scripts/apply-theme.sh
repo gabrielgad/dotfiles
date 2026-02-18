@@ -392,37 +392,10 @@ lua require('${theme_name}').setup()" > "${colors_dir}/${theme_name}.vim"
     log_success "nvim colorscheme '${theme_name}' installed"
 }
 
-# Update niri config border colors
+# Niri colors are applied via theme.kdl symlink + include directive in config.kdl
+# No need to sed-edit config.kdl anymore
 apply_niri_colors() {
-    local theme_dir="$1"
-    local niri_config="$HOME/.config/niri/config.kdl"
-    local colors_file="${theme_dir}/colors.yaml"
-
-    [[ ! -f "$niri_config" ]] && return 0
-    [[ ! -f "$colors_file" ]] && return 0
-
-    echo ""
-    log_info "Updating Niri border colors..."
-
-    # Get colors using Python
-    local colors_output
-    colors_output=$(python3 << PYTHON_SCRIPT
-import yaml
-with open("$colors_file", "r") as f:
-    data = yaml.safe_load(f)
-print(data["border"]["primary"], data["accent"]["primary"], data["semantic"]["inactive"], data["surface"]["primary"])
-PYTHON_SCRIPT
-)
-
-    local border_primary accent_primary inactive surface_primary
-    read border_primary accent_primary inactive surface_primary <<< "$colors_output"
-
-    # Update border colors in niri config using sed
-    sed -i "s|active-gradient from=\"#[0-9A-Fa-f]*\" to=\"#[0-9A-Fa-f]*\"|active-gradient from=\"${border_primary}\" to=\"${accent_primary}\"|g" "$niri_config"
-    sed -i "s|inactive-color \"#[0-9A-Fa-f]*\"|inactive-color \"${inactive}\"|g" "$niri_config"
-    sed -i "s|color \"#[0-9A-Fa-f]*cc\"|color \"${surface_primary}cc\"|g" "$niri_config"
-
-    log_success "Niri colors updated"
+    log_info "Niri colors applied via theme.kdl include"
 }
 
 # Reload niri config
