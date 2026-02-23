@@ -365,8 +365,8 @@ function M.setup()
 
   -- Terminal mode - NO leader bindings (they intercept typing)
   -- Use Ctrl-based bindings that don't conflict with normal typing
-  map('t', '<C-\\><C-\\>', '<C-\\><C-n>', 'Exit terminal mode')
-  map('t', '<C-\\><C-q>', '<C-\\><C-n>:lua require("terminal").close_and_jump()<CR>', 'Close terminal')
+  map('t', '<Esc>', '<C-\\><C-n>', 'Exit terminal mode')
+  map('t', '<C-\\><C-x>', '<C-\\><C-n>:lua require("terminal").close_and_jump()<CR>', 'Close terminal')
   map('t', '<C-\\><C-t>', '<C-\\><C-n>:lua require("terminal").toggle()<CR>', 'Toggle terminal')
   map('t', '<C-\\><C-]>', '<C-\\><C-n>:lua require("terminal").next()<CR>', 'Next terminal')
   map('t', '<C-\\><C-[>', '<C-\\><C-n>:lua require("terminal").prev()<CR>', 'Previous terminal')

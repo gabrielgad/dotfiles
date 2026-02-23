@@ -27,7 +27,7 @@ function M.setup()
 
   -- LSP key mappings
   local function on_attach(client, bufnr)
-    -- Use centralized LSP keybinds
+    vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = true })
     require('mappings').setup_lsp(bufnr)
   end
 
