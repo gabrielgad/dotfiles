@@ -58,6 +58,7 @@ link "$DOTFILES/bash/.profile"      "$HOME/.profile"
 link "$DOTFILES/git/.gitconfig"     "$HOME/.gitconfig"
 link "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
 link "$DOTFILES/yazi"               "$HOME/.config/yazi"
+link "$DOTFILES/claude/commands"    "$HOME/.claude/commands"
 
 # Nvim: different target on Windows
 if [ "$OS" = "windows" ]; then

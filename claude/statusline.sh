@@ -36,6 +36,25 @@ if git -c core.fileMode=false rev-parse --git-dir &>/dev/null; then
             git_info="$git_info 󰗡"
         else
             git_info="$git_info 󰷉"
+            # Get combined diff stats (unstaged + staged) for tracked files only
+            diff_stats=$(git -c core.fileMode=false diff --shortstat 2>/dev/null)
+            staged_stats=$(git -c core.fileMode=false diff --cached --shortstat 2>/dev/null)
+            # Parse files changed, insertions, deletions from both
+            files_w=$(echo "$diff_stats" | grep -oP '\d+(?= file)' || echo 0)
+            files_s=$(echo "$staged_stats" | grep -oP '\d+(?= file)' || echo 0)
+            adds_w=$(echo "$diff_stats" | grep -oP '\d+(?= insertion)' || echo 0)
+            adds_s=$(echo "$staged_stats" | grep -oP '\d+(?= insertion)' || echo 0)
+            dels_w=$(echo "$diff_stats" | grep -oP '\d+(?= deletion)' || echo 0)
+            dels_s=$(echo "$staged_stats" | grep -oP '\d+(?= deletion)' || echo 0)
+            total_files=$(( ${files_w:-0} + ${files_s:-0} ))
+            total_adds=$(( ${adds_w:-0} + ${adds_s:-0} ))
+            total_dels=$(( ${dels_w:-0} + ${dels_s:-0} ))
+            diff_display=""
+            [[ "$total_files" -gt 0 ]] && diff_display=" ${total_files}f"
+            [[ "$total_adds" -gt 0 ]] && diff_display="${diff_display} +${total_adds}"
+            [[ "$total_dels" -gt 0 ]] && diff_display="${diff_display} -${total_dels}"
+            [[ "$untracked_count" -gt 0 ]] && diff_display="${diff_display} ?${untracked_count}"
+            git_info="$git_info${diff_display}"
         fi
 
         # Check ahead/behind remote
