@@ -11,7 +11,7 @@ sort_dir_first = true
 # Layout
 layout = [1, 4, 3]
 tab_size = 1
-linemode = "mtime"
+linemode = "size_mtime"
 
 [preview]
 # Image preview using Kitty's image protocol
@@ -66,8 +66,8 @@ rules = [
 micro_workers = 5
 macro_workers = 10
 bizarre_retry = 3
-image_alloc = 536870912  # 512MB
-image_bound = [2, 2]
+image_alloc = 1073741824  # 1GB
+image_bound = [0, 0]  # No size limit
 suppress_preload = false
 
 [plugin]
