@@ -59,6 +59,10 @@ link "$DOTFILES/git/.gitconfig"     "$HOME/.gitconfig"
 link "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
 link "$DOTFILES/yazi"               "$HOME/.config/yazi"
 link "$DOTFILES/claude/commands"    "$HOME/.claude/commands"
+link "$DOTFILES/claude/CLAUDE.md"  "$HOME/.claude/CLAUDE.md"
+link "$DOTFILES/claude/settings.json" "$HOME/.claude/settings.json"
+link "$DOTFILES/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+link "$DOTFILES/claude/statusline.nu" "$HOME/.claude/statusline.nu"
 
 # Nvim: different target on Windows
 if [ "$OS" = "windows" ]; then
