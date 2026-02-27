@@ -84,6 +84,23 @@ if [ "$OS" = "linux" ]; then
     link "$DOTFILES/niri"     "$HOME/.config/niri"
     link "$DOTFILES/nushell"  "$HOME/.config/nushell"
     link "$DOTFILES/themes"   "$HOME/.config/themes"
+
+    # Machine-specific niri config
+    HOSTNAME="$(hostname)"
+    case "$HOSTNAME" in
+        peterthecomputer)
+            NIRI_VARIANT="config-desktop.kdl"
+            ;;
+        Xuewuzhijing)
+            NIRI_VARIANT="config-laptop.kdl"
+            ;;
+        *)
+            echo "[warn] Unknown hostname '$HOSTNAME', defaulting to desktop niri config"
+            NIRI_VARIANT="config-desktop.kdl"
+            ;;
+    esac
+    link "$DOTFILES/niri/$NIRI_VARIANT" "$DOTFILES/niri/config.kdl"
+    echo "[niri] $HOSTNAME -> $NIRI_VARIANT"
 fi
 
 # =============================================================================

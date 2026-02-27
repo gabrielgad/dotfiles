@@ -462,6 +462,10 @@ main() {
     echo "Applying theme: ${theme_name}"
     echo ""
 
+    # Re-process templates to ensure theme files match latest templates
+    log_info "Refreshing templates..."
+    bash "${SCRIPT_DIR}/process-templates.sh" "$theme_name"
+
     apply_symlinks "$theme_dir" "$theme_name"
     apply_copies "$theme_dir"
     apply_gtk_settings "$theme_name"

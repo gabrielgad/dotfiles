@@ -20,6 +20,9 @@ hypr/config/environment.conf
 # Niri theme (symlink managed by themix)
 niri/theme.kdl
 
+# Niri config (symlinked per-machine by install.sh)
+niri/config.kdl
+
 # Yazi theme (copy managed by themix)
 yazi/theme.toml
 
