@@ -80,6 +80,7 @@ spawn-at-startup "udiskie" "-ans"
 // gnome-keyring-daemon is started and unlocked by PAM (/etc/pam.d/ly) at login
 spawn-at-startup "bitwarden-desktop"
 spawn-at-startup "sh" "-c" "ELECTRON_OZONE_PLATFORM_HINT=x11 DISPLAY=:0 discord"
+spawn-at-startup "gammastep"
 
 cursor {
     xcursor-size 24
@@ -124,6 +125,11 @@ window-rule {
 }
 
 window-rule {
+    match app-id="qalculate-gtk"
+    open-floating true
+}
+
+window-rule {
     match app-id=r#"firefox$"# title="^Picture-in-Picture$"
     open-floating true
 }
@@ -155,11 +161,11 @@ binds {
     Mod+E { spawn "thunar"; }
     Mod+Y { spawn "kitty" "-e" "yazi"; }
     Mod+Shift+W { spawn "brave" "--password-store=basic"; }
-    Mod+Shift+E { spawn "bash" "-ic" "v"; }
     Mod+Shift+S { spawn "kitty" "-e" "btop"; }
     Mod+Shift+Y { spawn "bash" "-c" "~/.config/niri/scripts/yt-pause-on-unfocus-toggle.sh"; }
     Mod+Shift+D { spawn "claude-desktop"; }
-    Mod+Shift+C { spawn "obsidian"; }
+    Mod+Shift+O { spawn "obsidian"; }
+    Mod+Shift+C { spawn "qalculate-gtk"; }
 
     // ======= Window Management =======
     Mod+V { toggle-window-floating; }
